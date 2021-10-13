@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     GameObject player;
+    GameObject rangeCircle;
     private Rigidbody2D rb;
     private float OriginalX;
     private float OriginalY;
@@ -15,6 +16,7 @@ public class PlayerController : MonoBehaviour
     private float movementX;
     private float movementY;
     bool isMoving;
+    bool isShowingRange;
 
     public float speed = 1;
     public float range = 2;
@@ -22,10 +24,13 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        rangeCircle = GameObject.Find("Range");
         player = GameObject.Find("Bird Token Grey");
         OriginalX = player.GetComponent<Transform>().position.x;
         OriginalY = player.GetComponent<Transform>().position.y;
-        
+        rangeCircle.transform.position = new Vector2(OriginalX, OriginalY);
+        rangeCircle.GetComponent<SpriteRenderer>().color = new Color(80/255f, 240/255f, 100/255f, 0f);
+        isShowingRange = false;
     }
 
     void OnMove(InputValue movementValue)
@@ -33,15 +38,25 @@ public class PlayerController : MonoBehaviour
         Vector2 movementVector = movementValue.Get<Vector2>();
         movementX = movementVector.x;
         movementY = movementVector.y;
-        //Debug.Log($"onMove X: {movementX}, Y: {movementY}");
+        rangeCircle.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 25/255f);
+        isShowingRange = true;
+        //print($"onMove X: {movementX}, Y: {movementY}");
 
         if (!isMoving)
         {
             isMoving = true;
             OriginalX = player.GetComponent<Transform>().position.x;
             OriginalY = player.GetComponent<Transform>().position.y;
-            //Debug.Log($"Not isMoving = onMove X Pos: {OriginalX}, Y Pos: {OriginalY}");
+            //print($"Not isMoving = onMove X Pos: {OriginalX}, Y Pos: {OriginalY}");
         }
+    }
+
+    void OnRange()
+    {
+        //print("onRange Activated");
+        if (isShowingRange) { rangeCircle.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 0f); isShowingRange = false; }
+        else { rangeCircle.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 25/255f); isShowingRange = true; }
+
     }
 
     void FixedUpdate()
@@ -53,16 +68,19 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         tfCurrent = player.GetComponent<Transform>();
-        //Debug.Log($"Update Player X Pos: {tfCurrent.position.x}, Y Pos: {tfCurrent.position.y}");
+        //print($"Update Player X Pos: {tfCurrent.position.x}, Y Pos: {tfCurrent.position.y}");
 
         if (RangeExceeded())
         {
             rb.velocity = Vector2.zero;
             isMoving = false;
-            //Debug.Log($"#################################################### Should stop moving#################################################");
+            //print($"#################################################### Should stop moving#################################################");
             print("Your Turn is Over");
             OriginalX = player.GetComponent<Transform>().position.x;
             OriginalY = player.GetComponent<Transform>().position.y;
+            rangeCircle.transform.position = new Vector2(OriginalX, OriginalY);
+            rangeCircle.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 0f);
+            isShowingRange = false;
         }
     }
 
@@ -70,7 +88,9 @@ public class PlayerController : MonoBehaviour
     {
         float deltaX = Math.Abs(tfCurrent.position.x - OriginalX);
         float deltaY = Math.Abs(tfCurrent.position.y - OriginalY);
-        //Debug.Log($"RangeExceeded: Deltas X {deltaX}, Y {deltaY}");
+
+        if (tfCurrent.position.x - OriginalX < 0) { deltaX += 0.5f; } else { deltaX += 0.5f; }
+        if (tfCurrent.position.y - OriginalY < 0) { deltaY += 0.5f; } else { deltaY += 0.5f; }
 
         if (deltaX >= range) { return true; }
         if (deltaY >= range) { return true; }
