@@ -38,7 +38,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Stop",
+                    "name": "StopMoving",
                     "type": "Button",
                     "id": "33849988-3004-4360-b8b5-82352f6ed849",
                     "expectedControlType": "Button",
@@ -49,6 +49,14 @@
                     "name": "NewTurn",
                     "type": "Button",
                     "id": "f0e297b8-6966-4f2d-acaf-7b54707240d1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "TurnOff",
+                    "type": "Button",
+                    "id": "85559a62-15a0-47a8-a2f2-5fd5b978856c",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -128,7 +136,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Stop",
+                    "action": "StopMoving",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -140,6 +148,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "NewTurn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "aa719e2b-17b1-4c52-ac38-2c5fdbea61d0",
+                    "path": "<Keyboard>/#(o)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "TurnOff",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

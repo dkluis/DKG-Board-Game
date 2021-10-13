@@ -41,12 +41,11 @@ public class PlayerController : MonoBehaviour
         movementX = movementVector.x;
         movementY = movementVector.y;
         RangeViewToggle(true);
-        
         if (!isMoving)
         {
             isMoving = true;
         }
-        
+
     }
 
     void OnRange()
@@ -56,15 +55,23 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private void OnStop()
+    private void OnStopMoving()
     {
-        print("onStop Activated");
+        //print("onStop Activated");
         if (isMoving) { StopMoving(); }
+    }
+
+    private void OnTurnOff()
+    {
+        print("OnTurnOff activated");
+        if (isMoving) { StopMoving(); }
+        turnInProgress = false;
     }
 
     private void OnNewTurn()
     {
-        if (isMoving) { return;  }
+        if (isMoving) { return; }
+        if (turnInProgress) { return; }
         //print("New Turn Activiated");
         turnInProgress = true;
         OriginalX = player.GetComponent<Transform>().position.x;
@@ -74,13 +81,15 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (CheckIfRangeWillBeExceeded()) { StopMoving();  return; };
+
         Vector3 movement = new Vector3(movementX, movementY);
         rb.AddForce(movement * speed);
     }
 
     private void Update()
     {
-        if (RangeExceeded())
+        if (RangeExceeded() || !turnInProgress)
         {
             if (isMoving) { StopMoving(); }
         }
@@ -97,6 +106,17 @@ public class PlayerController : MonoBehaviour
 
         if (deltaX >= range) { return true; }
         if (deltaY >= range) { return true; }
+
+        return false;
+    }
+
+    private bool CheckIfRangeWillBeExceeded()
+    {
+        tfCurrent = player.GetComponent<Transform>();
+        //print($"Check if Range will be Exceeded");
+        if (Math.Abs(tfCurrent.position.x + movementX - OriginalX + 0.5f) >= range) { return true; }
+        if (Math.Abs(tfCurrent.position.y + movementY - OriginalY + 0.5f) >= range) { return true; }
+
         return false;
     }
 
@@ -104,10 +124,9 @@ public class PlayerController : MonoBehaviour
     {
         rb.velocity = Vector2.zero;
         isMoving = false;
-        //print("Stopped Moving");
     }
 
-    private void RangeViewToggle(bool TurnOn = false)
+    private void RangeViewToggle(bool TurnOn)
     {
         if (TurnOn) { rangeCircle.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 25 / 255f); isShowingRange = true; }
         else { rangeCircle.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 0f); isShowingRange = false; }
