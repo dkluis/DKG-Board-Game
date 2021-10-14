@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (CheckIfRangeWillBeExceeded()) { StopMoving();  return; };
+        if (CheckIfRangeWillBeExceeded()) { StopMoving(); return; };
 
         Vector3 movement = new Vector3(movementX, movementY);
         rb.AddForce(movement * speed);
@@ -113,9 +113,18 @@ public class PlayerController : MonoBehaviour
     private bool CheckIfRangeWillBeExceeded()
     {
         tfCurrent = player.GetComponent<Transform>();
-        //print($"Check if Range will be Exceeded");
-        if (Math.Abs(tfCurrent.position.x + movementX - OriginalX + 0.5f) >= range) { return true; }
-        if (Math.Abs(tfCurrent.position.y + movementY - OriginalY + 0.5f) >= range) { return true; }
+        if (Math.Abs(tfCurrent.position.x - OriginalX) + 0.5f >= range)
+        {
+            if (tfCurrent.position.x > 0 && movementX > 0) { return true; }
+            else
+            if (tfCurrent.position.x < 0 && movementX < 0) { return true; }
+        }
+        if (Math.Abs(tfCurrent.position.y - OriginalY) + 0.75f >= range)
+        {
+            if (tfCurrent.position.y > 0 && movementY > 0) { return true; }
+            else
+            if (tfCurrent.position.y < 0 && movementY < 0) { return true; }
+        }
 
         return false;
     }
