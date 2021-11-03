@@ -307,7 +307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d68025ae198aa401ab1e4d8e39868a7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ThetaScale: 0.01
+  thetaScale: 0.01
   radius: 2
 --- !u!4 &168597910
 Transform:

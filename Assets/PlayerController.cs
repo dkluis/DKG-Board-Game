@@ -87,14 +87,15 @@ public class PlayerController : MonoBehaviour
         //_isMoving = true;
     }
 
-    /*
     private void FixedUpdate()
     {
         if (CheckIfRangeWillBeExceeded()) { StopMoving(); return; }
         var movement = new Vector3(_movementX, _movementY);
         _rb.AddForce(movement * speed);
+        GameObject ranger = GameObject.Find("Range");
+        ranger.transform.localScale = new Vector3(range * 2, range * 2, 1f);
     }
-    */
+
     
     private void Update()
     {
