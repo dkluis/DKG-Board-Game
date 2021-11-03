@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -65,9 +66,7 @@ public class PlayerController : MonoBehaviour
         var mousePos = Mouse.current.position.ReadValue();
         if (Camera.main is null) return;
         var mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector2(mousePos.x, mousePos.y));
-        if (!CheckMove(mouseCalcPos)) return;
-        _point = mouseCalcPos;
-        _isMoving = true;
+        CheckMove(mouseCalcPos);
     }
 
     private void OnCollisionStay2D()
@@ -79,10 +78,18 @@ public class PlayerController : MonoBehaviour
     {
         var deltaX = Math.Abs(_originalX - mouseCalcPos.x);
         var deltaY = Math.Abs(_originalY - mouseCalcPos.y);
-        //deltaX = (float)Math.Round(deltaX, 0);
-        //deltaY = (float)Math.Round(deltaY, 0);
         if (deltaX > range || deltaY > range) return false;
-        return !(deltaX < range * -1f) && !(deltaY < range * -1);
+        if (deltaX < range * -1f || deltaY < range * -1f) return false;
+        //Valid Move - Setup the new Coordinates to MoveTo
+        var signedDeltaX = _originalX + mouseCalcPos.x;
+        var signedDeltaY = _originalY + mouseCalcPos.y;
+        var roundX = (float)Math.Round(signedDeltaX, 0);
+        var roundY = (float)Math.Round(signedDeltaY, 0);
+        //print($"Rounding ({deltaX}, {deltaY}) - ({roundX}, {roundY})");
+        _point.x = roundX;
+        _point.y = roundY;
+        _isMoving = true;
+        return true;
     }
 
     private void FixedUpdate()

@@ -12,7 +12,6 @@ public class LineRendering : MonoBehaviour
     private void Start()
     {
         _idx++;
-        print($"LineDrawer {_idx}");
         _lineDrawer = gameObject.AddComponent<LineRenderer>();
         _lineDrawer.startWidth = 0.025f;
         _lineDrawer.endWidth = 0.025f;
@@ -27,7 +26,7 @@ public class LineRendering : MonoBehaviour
             _theta += (2.0f * Mathf.PI * thetaScale);
             var x = radius * Mathf.Cos(_theta);
             var y = radius * Mathf.Sin(_theta);
-            _lineDrawer.SetPosition(i, new Vector3(x, y, 0));
+            _lineDrawer.SetPosition(i, new Vector3(x, y, 2));
         }
     }
 }
