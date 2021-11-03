@@ -1,143 +1,149 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    GameObject player;
-    GameObject rangeCircle;
-    private Rigidbody2D rb;
-    private float OriginalX;
-    private float OriginalY;
-    private Transform tfCurrent;
+    private GameObject _player;
+    private GameObject _rangeCircle;
+    private Rigidbody2D _rb;
+    private float _originalX;
+    private float _originalY;
+    private Transform _tfCurrent;
 
-    private float movementX;
-    private float movementY;
-    bool isMoving;
-    bool isShowingRange;
-    bool turnInProgress;
+    private float _movementX;
+    private float _movementY;
+    private bool _isMoving;
+    private bool _isShowingRange;
+    private bool _turnInProgress;
+
+    private Vector2 _point;
 
     public float speed = 1;
     public float range = 2;
 
-    void Start()
+    private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        rangeCircle = GameObject.Find("Range");
-        player = GameObject.Find("Bird Token Grey");
-        turnInProgress = false;
+        _rb = GetComponent<Rigidbody2D>();
+        _rangeCircle = GameObject.Find("Range");
+        _player = GameObject.Find("Bird Token Grey");
+        _turnInProgress = false;
         OnNewTurn();
         RangeViewToggle(false);
-        isMoving = false;
+        _isMoving = false;
     }
 
-    void OnMove(InputValue movementValue)
+    private void OnMove(InputValue movementValue)
     {
-        if (!turnInProgress) { return; }
-
-        Vector2 movementVector = movementValue.Get<Vector2>();
-        movementX = movementVector.x;
-        movementY = movementVector.y;
+        if (!_turnInProgress) return;
+        var movementVector = movementValue.Get<Vector2>();
+        _movementX = movementVector.x;
+        _movementY = movementVector.y;
         RangeViewToggle(true);
-        if (!isMoving)
-        {
-            isMoving = true;
-        }
-
+        if (_isMoving) return;
+        _isMoving = true;
     }
 
-    void OnRange()
+    private void OnRange()
     {
-        //print("onRange Activated");
-        if (isShowingRange) { RangeViewToggle(false); } else { RangeViewToggle(true); }
-
+        RangeViewToggle(!_isShowingRange);
     }
 
     private void OnStopMoving()
     {
-        //print("onStop Activated");
-        if (isMoving) { StopMoving(); }
+        if (_isMoving) StopMoving();
     }
 
     private void OnTurnOff()
     {
-        print("OnTurnOff activated");
-        if (isMoving) { StopMoving(); }
-        turnInProgress = false;
+        if (_isMoving) StopMoving(); 
+        _turnInProgress = false;
     }
 
     private void OnNewTurn()
     {
-        if (isMoving) { return; }
-        if (turnInProgress) { return; }
-        //print("New Turn Activiated");
-        turnInProgress = true;
-        OriginalX = player.GetComponent<Transform>().position.x;
-        OriginalY = player.GetComponent<Transform>().position.y;
-        rangeCircle.transform.position = new Vector2(OriginalX, OriginalY);
+        if (_isMoving) return;
+        if (_turnInProgress) return;
+        _turnInProgress = true;
+        _originalX = _player.GetComponent<Transform>().position.x;
+        _originalY = _player.GetComponent<Transform>().position.y;
+        _rangeCircle.transform.position = new Vector2(_originalX, _originalY);
     }
 
-    void FixedUpdate()
+    private void OnDragAndMove()
     {
-        if (CheckIfRangeWillBeExceeded()) { StopMoving(); return; };
-
-        Vector3 movement = new Vector3(movementX, movementY);
-        rb.AddForce(movement * speed);
+        //if (_isMoving) return;
+        var mousePos = Mouse.current.position.ReadValue();
+        var mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector2(mousePos.x, mousePos.y));
+        print($"Mouse ({mouseCalcPos.x}, {mouseCalcPos.y}, {mouseCalcPos.z})");
+        var playerCurrentPos = _player.transform.position;
+        print($"Player ({playerCurrentPos.x}, {playerCurrentPos.y})");
+        var deltaX = Math.Abs(playerCurrentPos.x - mouseCalcPos.x);
+        var deltaY = Math.Abs(playerCurrentPos.y - mouseCalcPos.y);
+        print($"Deltas ({deltaX}, {deltaY})");
+        if (deltaX > range || deltaY > range) return;
+        if (deltaX < range * -1f || deltaY < range * -1) return;
+        _point = mouseCalcPos;
+        //_isMoving = true;
     }
 
+    /*
+    private void FixedUpdate()
+    {
+        if (CheckIfRangeWillBeExceeded()) { StopMoving(); return; }
+        var movement = new Vector3(_movementX, _movementY);
+        _rb.AddForce(movement * speed);
+    }
+    */
+    
     private void Update()
     {
-        if (RangeExceeded() || !turnInProgress)
-        {
-            if (isMoving) { StopMoving(); }
-        }
+        _player.transform.position = Vector3.MoveTowards(_player.transform.position, _point, Time.deltaTime * speed);
+        _rangeCircle.transform.position = _point;
     }
 
     private bool RangeExceeded()
     {
-        tfCurrent = player.GetComponent<Transform>();
-        float deltaX = Math.Abs(tfCurrent.position.x - OriginalX);
-        float deltaY = Math.Abs(tfCurrent.position.y - OriginalY);
-
-        if (tfCurrent.position.x - OriginalX < 0) { deltaX += 0.5f; } else { deltaX += 0.5f; }
-        if (tfCurrent.position.y - OriginalY < 0) { deltaY += 0.5f; } else { deltaY += 0.5f; }
-
-        if (deltaX >= range) { return true; }
-        if (deltaY >= range) { return true; }
-
-        return false;
+        _tfCurrent = _player.GetComponent<Transform>();
+        var position = _tfCurrent.position;
+        var deltaX = Math.Abs(position.x - _originalX);
+        var deltaY = Math.Abs(position.y - _originalY);
+        if (_tfCurrent.position.x - _originalX < 0) { deltaX += 0.5f; } else { deltaX += 0.5f; }
+        if (_tfCurrent.position.y - _originalY < 0) { deltaY += 0.5f; } else { deltaY += 0.5f; }
+        return deltaX >= range || deltaY >= range;
     }
 
     private bool CheckIfRangeWillBeExceeded()
     {
-        tfCurrent = player.GetComponent<Transform>();
-        if (Math.Abs(tfCurrent.position.x - OriginalX) + 0.5f >= range)
+        _tfCurrent = _player.GetComponent<Transform>();
+        if (Math.Abs(_tfCurrent.position.x - _originalX) + 0.5f >= range)
         {
-            if (tfCurrent.position.x > 0 && movementX > 0) { return true; }
+            if (_tfCurrent.position.x > 0 && _movementX > 0) return true;
             else
-            if (tfCurrent.position.x < 0 && movementX < 0) { return true; }
+            if (_tfCurrent.position.x < 0 && _movementX < 0) return true;
         }
-        if (Math.Abs(tfCurrent.position.y - OriginalY) + 0.75f >= range)
-        {
-            if (tfCurrent.position.y > 0 && movementY > 0) { return true; }
-            else
-            if (tfCurrent.position.y < 0 && movementY < 0) { return true; }
-        }
-
-        return false;
+        if (!(Math.Abs(_tfCurrent.position.y - _originalY) + 0.75f >= range)) return false;
+        if (_tfCurrent.position.y > 0 && _movementY > 0) return true;
+        return _tfCurrent.position.y < 0 && _movementY < 0;
     }
 
     private void StopMoving()
     {
-        rb.velocity = Vector2.zero;
-        isMoving = false;
+        _rb.velocity = Vector2.zero;
+        _isMoving = false;
     }
 
-    private void RangeViewToggle(bool TurnOn)
+    private void RangeViewToggle(bool turnOn)
     {
-        if (TurnOn) { rangeCircle.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 25 / 255f); isShowingRange = true; }
-        else { rangeCircle.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 0f); isShowingRange = false; }
+        if (turnOn)
+        {
+            _rangeCircle.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 25 / 255f);
+            _isShowingRange = true;
+        }
+        else
+        {
+            _rangeCircle.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 0f);
+            _isShowingRange = false;
+        }
     }
 }

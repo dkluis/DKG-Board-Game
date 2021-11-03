@@ -60,6 +60,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "DragAndMove",
+                    "type": "Button",
+                    "id": "a793fc62-eb9c-4a21-818e-7f67b9740a53",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -159,6 +167,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "TurnOff",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d83aee00-b377-46d3-addf-e76fdd4af706",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "DragAndMove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
