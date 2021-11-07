@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -45,6 +46,12 @@ public class PlayerController : MonoBehaviour
         if (_isMoving) StopMoving(); 
         _turnInProgress = false;
     }
+    
+    private void OnMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
 
     private void OnNewTurn()
     {
