@@ -1,20 +1,21 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
  
 public class MainMenuController : MonoBehaviour
 {
-    public void playGame() {
+    [UsedImplicitly]
+    public void PlayGame() {
         SceneManager.LoadScene("InputSystemTest");
     }
  
-    public void options() {
+    [UsedImplicitly]
+    public void Options() {
         
     }
  
-    public void exitGame() {
+    [UsedImplicitly]
+    public void ExitGame() {
         Application.Quit();
         print("Should be quiting the game now");
     }
