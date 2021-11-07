@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,5 +16,6 @@ public class MainMenuController : MonoBehaviour
  
     public void exitGame() {
         Application.Quit();
+        print("Should be quiting the game now");
     }
 }
