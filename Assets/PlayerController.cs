@@ -1,15 +1,14 @@
 using System;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
     private GameObject _player;
+   
     private GameObject _rangeSquare;
-    private GameObject _rangeCircle;
-    private Rigidbody2D _rb;
-    private float _originalX;
+    //private Rigidbody2D _rb;
+    private float _originalX; 
     private float _originalY;
     private bool _isMoving;
     private bool _isShowingRange;
@@ -22,9 +21,8 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        _rb = GetComponent<Rigidbody2D>();
+        //_rb = GetComponent<Rigidbody2D>();
         _rangeSquare = GameObject.Find("Range");
-        _rangeCircle = GameObject.Find("RangeRenderer");
         _player = GameObject.Find("Bird Token Grey");
         _turnInProgress = false;
         OnNewTurn();
@@ -36,7 +34,7 @@ public class PlayerController : MonoBehaviour
     {
         RangeViewToggle(!_isShowingRange);
     }
-
+    
     private void OnStopMoving()
     {
         if (_isMoving) StopMoving();
@@ -54,10 +52,10 @@ public class PlayerController : MonoBehaviour
         if (_turnInProgress) return;
         _turnInProgress = true;
         var position = _player.transform.position;
+        print($"Changing Original Pos from ({_originalX},{_originalY}) to ({position.x},{position.y})");
         _originalX = position.x;
         _originalY = position.y;
         _rangeSquare.transform.position = new Vector2(_originalX, _originalY);
-        _rangeCircle.transform.position = new Vector2(_originalX, _originalY);
     }
 
     private void OnDragAndMove()
@@ -72,24 +70,24 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionStay2D()
     {
         StopMoving();
+        //ToDo correct the final position
     }
 
-    private bool CheckMove(Vector3 mouseCalcPos)
+    private void CheckMove(Vector3 mouseCalcPos)
     {
         var deltaX = Math.Abs(_originalX - mouseCalcPos.x);
         var deltaY = Math.Abs(_originalY - mouseCalcPos.y);
-        if (deltaX > range || deltaY > range) return false;
-        if (deltaX < range * -1f || deltaY < range * -1f) return false;
+        if (deltaX > range || deltaY > range) return;
+        if (deltaX < range * -1f || deltaY < range * -1f) return;
         //Valid Move - Setup the new Coordinates to MoveTo
         var signedDeltaX = _originalX + mouseCalcPos.x;
         var signedDeltaY = _originalY + mouseCalcPos.y;
         var roundX = (float)Math.Round(signedDeltaX, 0);
         var roundY = (float)Math.Round(signedDeltaY, 0);
-        //print($"Rounding ({deltaX}, {deltaY}) - ({roundX}, {roundY})");
-        _point.x = roundX;
-        _point.y = roundY;
+        //print($"Rounding ({deltaX}, {deltaY}) - ({roundX - _originalX}, {roundY - _originalY})");
+        _point.x = roundX - _originalX;
+        _point.y = roundY - _originalY;
         _isMoving = true;
-        return true;
     }
 
     private void FixedUpdate()
