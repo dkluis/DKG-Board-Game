@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -6,10 +7,11 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     private GameObject _player;
-   
     private GameObject _rangeSquare;
+    private GameObject _ranger;
+
     //private Rigidbody2D _rb;
-    private float _originalX; 
+    private float _originalX;
     private float _originalY;
     private bool _isMoving;
     private bool _isShowingRange;
@@ -24,6 +26,7 @@ public class PlayerController : MonoBehaviour
     {
         //_rb = GetComponent<Rigidbody2D>();
         _rangeSquare = GameObject.Find("Range");
+        _ranger = GameObject.Find("Ranger");
         _player = GameObject.Find("Bird Token Grey");
         _turnInProgress = false;
         OnNewTurn();
@@ -31,22 +34,26 @@ public class PlayerController : MonoBehaviour
         _isMoving = false;
     }
 
+    [UsedImplicitly]
     private void OnRange()
     {
         RangeViewToggle(!_isShowingRange);
     }
-    
+
+    [UsedImplicitly]
     private void OnStopMoving()
     {
         if (_isMoving) StopMoving();
     }
 
+    [UsedImplicitly]
     private void OnTurnOff()
     {
-        if (_isMoving) StopMoving(); 
+        if (_isMoving) StopMoving();
         _turnInProgress = false;
     }
-    
+
+    [UsedImplicitly]
     private void OnMenu()
     {
         SceneManager.LoadScene("MainMenu");
@@ -63,8 +70,10 @@ public class PlayerController : MonoBehaviour
         _originalX = position.x;
         _originalY = position.y;
         _rangeSquare.transform.position = new Vector2(_originalX, _originalY);
+        _ranger.transform.position = new Vector2(_originalX, _originalY);
     }
 
+    [UsedImplicitly]
     private void OnDragAndMove()
     {
         if (_isMoving) return;
@@ -89,8 +98,8 @@ public class PlayerController : MonoBehaviour
         //Valid Move - Setup the new Coordinates to MoveTo
         var signedDeltaX = _originalX + mouseCalcPos.x;
         var signedDeltaY = _originalY + mouseCalcPos.y;
-        var roundX = (float)Math.Round(signedDeltaX, 0);
-        var roundY = (float)Math.Round(signedDeltaY, 0);
+        var roundX = (float) Math.Round(signedDeltaX, 0);
+        var roundY = (float) Math.Round(signedDeltaY, 0);
         //print($"Rounding ({deltaX}, {deltaY}) - ({roundX - _originalX}, {roundY - _originalY})");
         _point.x = roundX - _originalX;
         _point.y = roundY - _originalY;
@@ -103,7 +112,7 @@ public class PlayerController : MonoBehaviour
         ranger.transform.localScale = new Vector3(range * 2, range * 2, 1f);
     }
 
-    
+
     private void Update()
     {
         if (!_isMoving) return;
