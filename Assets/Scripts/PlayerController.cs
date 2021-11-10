@@ -91,10 +91,12 @@ public class PlayerController : MonoBehaviour
 
     private void CheckMove(Vector3 mouseCalcPos)
     {
+        /*
         var deltaX = Math.Abs(_originalX - mouseCalcPos.x);
         var deltaY = Math.Abs(_originalY - mouseCalcPos.y);
         if (deltaX > range || deltaY > range) return;
         if (deltaX < range * -1f || deltaY < range * -1f) return;
+        */
         //Valid Move - Setup the new Coordinates to MoveTo
         var signedDeltaX = _originalX + mouseCalcPos.x;
         var signedDeltaY = _originalY + mouseCalcPos.y;
@@ -103,6 +105,12 @@ public class PlayerController : MonoBehaviour
         //print($"Rounding ({deltaX}, {deltaY}) - ({roundX - _originalX}, {roundY - _originalY})");
         _point.x = roundX - _originalX;
         _point.y = roundY - _originalY;
+        // Ranger Calculations
+        if ((Math.Abs(_point.x) + Math.Abs(_point.y)) - (Math.Abs(_originalX) + Math.Abs(_originalY)) > range)
+        {
+            print($"Not allowed to move here, breaking the grid rules");
+            return;
+        }
         _isMoving = true;
     }
 
