@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
     private GameObject _player;
     private GameObject _rangeSquare;
     private GameObject _ranger;
+    private GameObject _ranger2;
+    private GameObject _ranger3;
 
     //private Rigidbody2D _rb;
     private float _originalX;
@@ -19,18 +21,25 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 _point;
 
-    public float speed = 1;
-    public float range = 2;
+    public int speed = 5;
+    public int range = 2;
+    private int _currentRange;
 
     private void Start()
     {
         //_rb = GetComponent<Rigidbody2D>();
         _rangeSquare = GameObject.Find("Range");
-        _ranger = GameObject.Find("Ranger");
+        _ranger = GameObject.Find("Grid-Range");
+        _ranger2 = GameObject.Find("Grid-Range-2");
+        _ranger3 = GameObject.Find("Grid-Range-3");
+        
         _player = GameObject.Find("Bird Token Grey");
         _turnInProgress = false;
         OnNewTurn();
         RangeViewToggle(true);
+        _currentRange = 1;
+        _ranger2.SetActive(false);
+        _ranger3.SetActive(false);
         _isMoving = false;
     }
 
@@ -123,6 +132,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (_currentRange != range)
+        {
+            if (range > 3 || range < 1) range = 1;
+            RangeViewToggle(true);
+            _currentRange = range;
+        }
         if (!_isMoving) return;
         var position = _player.transform.position;
         position = Vector3.MoveTowards(position, _point, Time.deltaTime * speed);
@@ -137,15 +152,29 @@ public class PlayerController : MonoBehaviour
 
     private void RangeViewToggle(bool turnOn)
     {
+        _ranger.SetActive(false);
+        _ranger2.SetActive(false);
+        _ranger3.SetActive(false);
+        _isShowingRange = false;
         if (turnOn)
         {
-            _rangeSquare.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 25 / 255f);
+            switch (range)
+            {
+                case 2:
+                    _ranger2.SetActive(true);
+                    break;
+                case 3:
+                    _ranger2.SetActive(true);
+                    _ranger3.SetActive(true);
+                    break;
+            }
+            _ranger.SetActive(true);
+            //_ranger.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 25 / 255f);
             _isShowingRange = true;
         }
         else
         {
-            _rangeSquare.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 0f);
-            _isShowingRange = false;
+            //_ranger.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 0f);
         }
     }
 }
