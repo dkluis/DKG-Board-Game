@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,12 +21,15 @@ public class PlayerController : MonoBehaviour
     // const int maxX = 10;
     // const int maxY = 6;
     
-    private readonly BoardLocations _boardLocations = new BoardLocations();
-    private readonly BoardLocations _board = new BoardLocations();
-    private readonly BoardLocations _rangeLocations = new BoardLocations();
+    private BoardLocations _boardLocations;
+    private BoardLocations _board;
+    private BoardLocations _rangeLocations;
 
     private void Start()
     {
+        _boardLocations = new BoardLocations();
+        _board = new BoardLocations();
+        _rangeLocations = new BoardLocations();
         _player = GameObject.Find("Bird Token Grey");
         _turnInProgress = false;
         _currentRange = 2;
@@ -103,28 +107,32 @@ public class PlayerController : MonoBehaviour
         var roundY = (float) Math.Round(_originalY + mouseCalcPos.y, 0);
         _point.x = roundX - _originalX;
         _point.y = roundY - _originalY;
-        print($"Round {roundX}, {roundY} Point {_point.x}, {_point.y}");
+        //print($"Round {roundX}, {roundY} Point {_point.x}, {_point.y}");
         var locToCheck = new Vector2(_point.x, _point.y);
         var gp = _rangeLocations.CheckGrid(locToCheck);
         var cc = _boardLocations.CheckGameObjects("CircleCollider", locToCheck);
         var bp = _board.CheckBoard(locToCheck);
         print($"Location to Check {locToCheck.x}, {locToCheck.y}");
-        print($"Grid Point: {gp}");
-        print($"Circle Collider {cc}");
-        print($"Board Point {bp}");
-        if (!gp) return;
-        if (cc) return;
-        if (!bp) return;
+        //print($"Grid Point: {gp}");
+        //print($"Circle Collider {cc}");
+        //print($"Board Point {bp}");
+        if (!gp || cc || !bp) return; 
+        //_player.transform.position = new Vector2(_originalX, _originalY);
         _isMoving = true;
     }
 
     private void Update()
     {
         if (!_isMoving) return;
+        _player.transform.position = _point;
+        _isMoving = false;
+        return;
+        /*
         var position = _player.transform.position;
         position = Vector3.MoveTowards(position, _point, Time.deltaTime * speed);
         _player.transform.position = position;
         if (Math.Abs(position.x - _point.x) < 0.00001f && Math.Abs(position.y - _point.y) < 0.00001f) _isMoving = false;
+        */
     }
 
     private void StopMoving()

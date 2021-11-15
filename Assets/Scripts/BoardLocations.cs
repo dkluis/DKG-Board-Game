@@ -2,25 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoardLocation : IDisposable
-{
-    public readonly string Name;
-    public readonly string Tag;
-    public Vector2 Location;
-
-    public BoardLocation(string name, string tag, Vector3 position)
-    {
-        Name = name;
-        Tag = tag;
-        Location = position;
-    }
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
-}
-
 public class BoardLocations
 {
     private List<BoardLocation> _gameObjectLocations = new List<BoardLocation>();
@@ -101,11 +82,20 @@ public class BoardLocations
         {
             for (var y = range * -1; y <= range; y++)
             {
-                if (Math.Abs(x) + Math.Abs(y) > range) continue;
+                var totalDistance = Math.Abs(x) + Math.Abs(y);
+                if (totalDistance > range) continue;
                 var newPos = new Vector2(x + currentPos.x, y + currentPos.y);
                 var boardLocation = new BoardLocation($"GridPoint ({newPos.x},{newPos.y})", "GridPoint", newPos);
                 _rangeLocations.Add(boardLocation);
-                InitGridPoint("GridPoint Home", newPos);
+                var gridPointType = totalDistance switch
+                {
+                    0 => "GridPoint Home",
+                    1 => "GridPoint Green",
+                    2 => "GridPoint Blue",
+                    3 => "GridPoint Red",
+                    _ => "GridPoint Home"
+                };
+                InitGridPoint(gridPointType, newPos);
             }
         }
     }
@@ -126,18 +116,3 @@ public class BoardLocations
     }
 }
 
-public class BoardActions : MonoBehaviour
-{
-    public static void Init(GameObject gO, Vector2 position)
-    {
-        var newGp = Instantiate(gO.transform, position, Quaternion.identity);
-        newGp.name = $"Range Point ({position.x},{position.y})";
-        newGp.tag = "RangePoint";
-        newGp.transform.position = position;
-    }
-
-    public static void Remove(GameObject gO)
-    {
-        Destroy(gO);
-    }
-}
