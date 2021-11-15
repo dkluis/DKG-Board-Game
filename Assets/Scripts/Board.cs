@@ -26,7 +26,7 @@ public class BoardLocations
     private List<BoardLocation> _gameObjectLocations = new List<BoardLocation>();
     private List<BoardLocation> _boardLocations = new List<BoardLocation>();
     private List<BoardLocation> _rangeLocations = new List<BoardLocation>();
-
+    
     public List<BoardLocation> GetBoardLocations(bool noFill = false)
     {
         if (noFill && _gameObjectLocations != null) return _gameObjectLocations;
@@ -49,9 +49,9 @@ public class BoardLocations
         return _rangeLocations;
     }
 
-    public bool CheckGameObjects(string tag, Vector2 position)
+    public bool CheckGameObjects(string findTag, Vector2 position)
     {
-        var boardLocation = _gameObjectLocations.Find(brdLoc => brdLoc.Tag == tag && brdLoc.Location == position);
+        var boardLocation = _gameObjectLocations.Find(brdLoc => brdLoc.Tag == findTag && brdLoc.Location == position);
         return boardLocation is { };
     }
     
@@ -92,18 +92,52 @@ public class BoardLocations
     
     private void SetGrid()
     {
+        ResetGridPoints();
         var player = GameObject.Find("Bird Token Grey");
         var currentPos = player.transform.position;
-        Debug.Log($"Base Location for Player in Grid {currentPos.x}, {currentPos.y}");
         var range = player.GetComponent<PlayerController>().range;
+        Debug.Log($"Base Location for Player in Grid {currentPos.x}, {currentPos.y} with Range of {range}");
         for (var x = range * -1; x <= range; x++)
         {
             for (var y = range * -1; y <= range; y++)
             {
-                if (Math.Abs(x) + Math.Abs(y) > range) continue; 
-                var boardLocation = new BoardLocation($"GridPoint ({x + currentPos.x},{y + currentPos.y})", "GridPoint", new Vector2(x + currentPos.x, y + currentPos.y));
+                if (Math.Abs(x) + Math.Abs(y) > range) continue;
+                var newPos = new Vector2(x + currentPos.x, y + currentPos.y);
+                var boardLocation = new BoardLocation($"GridPoint ({newPos.x},{newPos.y})", "GridPoint", newPos);
                 _rangeLocations.Add(boardLocation);
+                InitGridPoint("GridPoint Home", newPos);
             }
         }
+    }
+
+    private static void InitGridPoint(string gpType, Vector2 position)
+    {
+        var requestedGo = GameObject.Find(gpType);
+        BoardActions.Init(requestedGo, position);
+    }
+
+    private static void ResetGridPoints()
+    {
+        var allGridPoints = GameObject.FindGameObjectsWithTag("RangePoint");
+        foreach (var gridPoint in allGridPoints)
+        {
+            BoardActions.Remove(gridPoint);
+        }
+    }
+}
+
+public class BoardActions : MonoBehaviour
+{
+    public static void Init(GameObject gO, Vector2 position)
+    {
+        var newGp = Instantiate(gO.transform, position, Quaternion.identity);
+        newGp.name = $"Range Point ({position.x},{position.y})";
+        newGp.tag = "RangePoint";
+        newGp.transform.position = position;
+    }
+
+    public static void Remove(GameObject gO)
+    {
+        Destroy(gO);
     }
 }

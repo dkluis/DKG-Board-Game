@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     private GameObject _player;
-    private GameObject _gridRange;
     private float _originalX;
     private float _originalY;
     private bool _isMoving;
@@ -28,13 +27,10 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         _player = GameObject.Find("Bird Token Grey");
-        _gridRange = GameObject.Find("Grid-Range");
         _turnInProgress = false;
         _currentRange = 2;
         _isMoving = false;
         _board.GetFullBoard();
-        _boardLocations.GetBoardLocations();
-        _rangeLocations.GetGrid();
         OnNewTurn();
         RangeViewToggle(true);
     }
@@ -81,7 +77,7 @@ public class PlayerController : MonoBehaviour
             _currentRange = range;
         }
         _rangeLocations.GetGrid();
-        _gridRange.transform.position = position;
+        _boardLocations.GetBoardLocations();
     }
 
     [UsedImplicitly]
