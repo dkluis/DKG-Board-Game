@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,7 +10,6 @@ public class PlayerController : MonoBehaviour
     private float _originalX;
     private float _originalY;
     private bool _isMoving;
-    private bool _isShowingRange;
     private bool _turnInProgress;
 
     private Vector2 _point;
@@ -75,7 +73,6 @@ public class PlayerController : MonoBehaviour
         if (_currentRange != range)
         {
             if (range > 3 || range < 1) range = 1;
-            RangeViewToggle(true);
             _currentRange = range;
         }
         _rangeLocations.Refill();
@@ -135,26 +132,5 @@ public class PlayerController : MonoBehaviour
     private void StopMoving()
     {
         _isMoving = false;
-    }
-
-    private void RangeViewToggle(bool turnOn)
-    {
-        _isShowingRange = false;
-        if (turnOn)
-        {
-            switch (range)
-            {
-                case 2:
-                    break;
-                case 3:
-                    break;
-            }
-            //_ranger.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 25 / 255f);
-            _isShowingRange = true;
-        }
-        else
-        {
-            //_ranger.GetComponent<SpriteRenderer>().color = new Color(80 / 255f, 240 / 255f, 100 / 255f, 0f);
-        }
     }
 }
