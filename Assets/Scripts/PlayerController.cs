@@ -40,7 +40,8 @@ public class PlayerController : MonoBehaviour
     [UsedImplicitly]
     private void OnRange()
     {
-        RangeViewToggle(!_isShowingRange);
+        //RangeViewToggle(!_isShowingRange);
+        _colliders.Shuffle();
     }
 
     [UsedImplicitly]
