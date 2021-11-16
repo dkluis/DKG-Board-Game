@@ -1,14 +1,17 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 public class BoardCoordinates
 {
     private readonly List<BoardLocation> _boardPoints = new List<BoardLocation>();
+    private readonly int _maxX;
+    private readonly int _maxY;
 
     public BoardCoordinates()
     {
+        var maxes = GameObject.Find("SceneInfo");
+        _maxX = maxes.GetComponent<SceneInfo>().boardMaxX;
+        _maxY = maxes.GetComponent<SceneInfo>().boardMaxY;
         FillBoard();
     }
     
@@ -20,11 +23,9 @@ public class BoardCoordinates
     
     private void FillBoard()
     {
-        const int maxX = 9;
-        const int maxY = 5;
-        for (var x = maxX * -1; x <= maxX; x++)
+        for (var x = _maxX * -1; x <= _maxX; x++)
         {
-            for (var y = maxY * -1; y <= maxY; y++)
+            for (var y = _maxY * -1; y <= _maxY; y++)
             {
                 var boardLocation = new BoardLocation($"BoardPoint ({x},{y})", "BoardPoint", new Vector2(x, y));
                 _boardPoints.Add(boardLocation);
