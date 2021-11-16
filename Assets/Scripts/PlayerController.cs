@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -21,22 +20,21 @@ public class PlayerController : MonoBehaviour
     // const int maxX = 10;
     // const int maxY = 6;
     
-    private BoardLocations _boardLocations;
-    private BoardLocations _board;
-    private BoardLocations _rangeLocations;
+    private Colliders _colliders;
+    private BoardCoordinates _board;
+    private Rangers _rangeLocations;
 
     private void Start()
     {
-        _boardLocations = new BoardLocations();
-        _board = new BoardLocations();
-        _rangeLocations = new BoardLocations();
         _player = GameObject.Find("Bird Token Grey");
+        _colliders = new Colliders();
+        _board = new BoardCoordinates();
+        _rangeLocations = new Rangers(_player, _board);
+        
         _turnInProgress = false;
         _currentRange = 2;
         _isMoving = false;
-        _board.GetFullBoard();
         OnNewTurn();
-        RangeViewToggle(true);
     }
 
     [UsedImplicitly]
@@ -80,8 +78,8 @@ public class PlayerController : MonoBehaviour
             RangeViewToggle(true);
             _currentRange = range;
         }
-        _rangeLocations.GetGrid();
-        _boardLocations.GetBoardLocations();
+        _rangeLocations.Refill();
+        _colliders.ReFill();
     }
 
     [UsedImplicitly]
@@ -109,9 +107,9 @@ public class PlayerController : MonoBehaviour
         _point.y = roundY - _originalY;
         //print($"Round {roundX}, {roundY} Point {_point.x}, {_point.y}");
         var locToCheck = new Vector2(_point.x, _point.y);
-        var gp = _rangeLocations.CheckGrid(locToCheck);
-        var cc = _boardLocations.CheckGameObjects("CircleCollider", locToCheck);
-        var bp = _board.CheckBoard(locToCheck);
+        var gp = _rangeLocations.CheckRangerPoint(locToCheck);
+        var cc = _colliders.CheckIfColliderPoint(locToCheck);
+        var bp = _board.IsValidBoardPoint(locToCheck);
         print($"Location to Check {locToCheck.x}, {locToCheck.y}");
         //print($"Grid Point: {gp}");
         //print($"Circle Collider {cc}");
@@ -126,7 +124,6 @@ public class PlayerController : MonoBehaviour
         if (!_isMoving) return;
         _player.transform.position = _point;
         _isMoving = false;
-        return;
         /*
         var position = _player.transform.position;
         position = Vector3.MoveTowards(position, _point, Time.deltaTime * speed);
