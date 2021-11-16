@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
-using UnityEngine.UI;
 using Random = System.Random;
 
 public class Colliders
@@ -11,21 +9,34 @@ public class Colliders
 
     public Colliders()
     {
-        ReFill();
+        var pos = new Vector2(0f, 0f);
+        ReFill(pos);
     }
 
-    public void ReFill(bool randomize = false)
+    [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
+    public void ReFill(Vector2 playerPos, bool randomize = false)
     {
+        var sceneInfo = GameObject.Find("SceneInfo");
+        var maxes = sceneInfo.GetComponent<SceneInfo>();
         _colliderPoints = new List<BoardLocation>();
         var allGameObjectLocations = GameObject.FindGameObjectsWithTag("CircleCollider");
         var random = new Random();
         foreach (var gO in allGameObjectLocations)
         {
+            var good = false;
+
             if (randomize)
             {
-                var newPos = new Vector2(random.Next(-9, 9), random.Next(-5, 5));
-                gO.transform.position = newPos;
+                while (!good)
+                {
+                    var newPos = new Vector2(random.Next(maxes.boardMaxX * -1, maxes.boardMaxX),
+                        random.Next(maxes.boardMaxY * -1, maxes.boardMaxY));
+                    gO.transform.position = newPos;
+                    if (playerPos.x == newPos.x && playerPos.y == newPos.y) continue;
+                    if (!CheckIfColliderPoint(newPos)) good = true;
+                }
             }
+            
             using var boardLocation = new BoardLocation(gO.name, gO.tag, gO.transform.position);
             _colliderPoints.Add(boardLocation);
         }
@@ -37,8 +48,8 @@ public class Colliders
         return boardLocation is { };
     }
 
-    public void Shuffle()
+    public void Shuffle(Vector2 playerPos)
     {
-        ReFill(true);
+        ReFill(playerPos, true);
     }
 }

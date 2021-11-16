@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -17,9 +18,7 @@ public class PlayerController : MonoBehaviour
     public int speed = 5;
     public int range;
     private int _currentRange;
-    // const int maxX = 10;
-    // const int maxY = 6;
-    
+
     private Colliders _colliders;
     private BoardCoordinates _board;
     private Rangers _rangeLocations;
@@ -41,7 +40,7 @@ public class PlayerController : MonoBehaviour
     private void OnRange()
     {
         //RangeViewToggle(!_isShowingRange);
-        _colliders.Shuffle();
+        _colliders.Shuffle(_player.transform.position);
     }
 
     [UsedImplicitly]
@@ -80,7 +79,7 @@ public class PlayerController : MonoBehaviour
             _currentRange = range;
         }
         _rangeLocations.Refill();
-        _colliders.ReFill();
+        _colliders.ReFill(_player.transform.position);
     }
 
     [UsedImplicitly]
