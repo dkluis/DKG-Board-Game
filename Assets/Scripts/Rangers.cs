@@ -64,7 +64,6 @@ public class Rangers
         var playerY = (int) _playerPosition.y;
         var toPosX = (int) toPosition.x;
         var toPosY = (int) toPosition.y;
-        var validRouteExist = true;
 
         if (playerX == toPosX && playerY != toPosY)
         {
@@ -72,20 +71,19 @@ public class Rangers
             {
                 for (var i = playerY; i < toPosY; i++)
                 {
-                    if (_colliders.CheckIfColliderPoint(new Vector2(toPosX, i))) validRouteExist = false;
+                    if (_colliders.CheckIfColliderPoint(new Vector2(toPosX, i))) return false;
                 }
             }
             else
             {
-                if (toPosY < playerY)
+                if (toPosY >= playerY) return true;
+                for (var i = playerY; i > toPosY; i--)
                 {
-                    for (var i = playerY; i > toPosY; i--)
-                    {
-                        if (_colliders.CheckIfColliderPoint(new Vector2(toPosX, i))) validRouteExist = false;
-                    }
+                    if (_colliders.CheckIfColliderPoint(new Vector2(toPosX, i))) return false;
                 }
             }
-            return validRouteExist;
+
+            return true;
         }
 
         if (playerY == toPosY && playerX != toPosX)
@@ -94,22 +92,22 @@ public class Rangers
             {
                 for (var i = playerX; i < toPosX; i++)
                 {
-                    if (_colliders.CheckIfColliderPoint(new Vector2(i, toPosY))) validRouteExist = false;
+                    if (_colliders.CheckIfColliderPoint(new Vector2(i, toPosY))) return false;
                 }
             }
             else
             {
-                if (toPosX < playerX)
+                if (toPosX >= playerX) return true;
+                for (var i = playerX; i > toPosX; i--)
                 {
-                    for (var i = playerX; i > toPosX; i--)
-                    {
-                        if (_colliders.CheckIfColliderPoint(new Vector2(i, toPosY))) validRouteExist = false;
-                    }
+                    if (_colliders.CheckIfColliderPoint(new Vector2(i, toPosY))) return false;
                 }
             }
-            return validRouteExist;
+
+            return true;
         }
-        return validRouteExist;
+
+        return true;
     }
 
     private static void InitRangeIndicator(string rpIndType, Vector2 position)
