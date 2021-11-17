@@ -8,7 +8,7 @@ public class Rangers
 {
     private List<BoardLocation> _rangerPoints = new List<BoardLocation>();
     private int _range;
-    private Vector2 _playerPosition; 
+    private Vector2 _playerPosition;
     private readonly BoardCoordinates _boardPoints;
     private readonly Colliders _colliders;
 
@@ -18,7 +18,7 @@ public class Rangers
         _colliders = colliders;
         Refill(player);
     }
-    
+
     public bool CheckRangerPoint(Vector2 position)
     {
         var boardLocation = _rangerPoints.Find(brdLoc => brdLoc.Location == position);
@@ -50,34 +50,66 @@ public class Rangers
                     _ => "GridPoint Home"
                 };
                 if (!_boardPoints.IsValidBoardPoint(newPos)) continue;
-                //if (!IsValidRouteAvailable(newPos)) continue;
+                if (!IsValidRouteAvailable(newPos)) continue;
                 _rangerPoints.Add(boardLocation);
                 InitRangeIndicator(rangeIndType, newPos);
             }
         }
     }
-    
+
     [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
     private bool IsValidRouteAvailable(Vector2 toPosition)
     {
-        
-        /*
-        foreach (var rangePoint in RangerPoints)
+        var playerX = (int) _playerPosition.x;
+        var playerY = (int) _playerPosition.y;
+        var toPosX = (int) toPosition.x;
+        var toPosY = (int) toPosition.y;
+        var validRouteExist = true;
+
+        if (playerX == toPosX && playerY != toPosY)
         {
-            var rangePosX = rangePoint.Location.x;
-            var rangePosY = rangePoint.Location.y;
-            var checkPosX = 0;
-            if (playerPosX == rangePosX)
-                if (rangePosY < 0)
-                    if (ColliderPoints.CheckGameObjects("CircleCollider", new Vector2(rangePosX, playerPosY - 1)))
+            if (toPosY > playerY)
+            {
+                for (var i = playerY; i < toPosY; i++)
+                {
+                    if (_colliders.CheckIfColliderPoint(new Vector2(toPosX, i))) validRouteExist = false;
+                }
+            }
+            else
+            {
+                if (toPosY < playerY)
+                {
+                    for (var i = playerY; i > toPosY; i--)
                     {
-                        var rangePointBlocked = new BoardLocation($"GridPoint ({rangePosX},{rangePosY})", "GridPoint", new Vector2(rangePosX, rangePosY));
-                        RangerPoints.Find(rangePointBlocked);
+                        if (_colliders.CheckIfColliderPoint(new Vector2(toPosX, i))) validRouteExist = false;
                     }
-            Debug.Log(rangePoint.Location);  
+                }
+            }
+            return validRouteExist;
         }
-        */
-        return true;
+
+        if (playerY == toPosY && playerX != toPosX)
+        {
+            if (toPosX > playerX)
+            {
+                for (var i = playerX; i < toPosX; i++)
+                {
+                    if (_colliders.CheckIfColliderPoint(new Vector2(i, toPosY))) validRouteExist = false;
+                }
+            }
+            else
+            {
+                if (toPosX < playerX)
+                {
+                    for (var i = playerX; i > toPosX; i--)
+                    {
+                        if (_colliders.CheckIfColliderPoint(new Vector2(i, toPosY))) validRouteExist = false;
+                    }
+                }
+            }
+            return validRouteExist;
+        }
+        return validRouteExist;
     }
 
     private static void InitRangeIndicator(string rpIndType, Vector2 position)
