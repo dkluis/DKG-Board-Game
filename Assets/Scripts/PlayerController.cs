@@ -26,8 +26,7 @@ public class PlayerController : MonoBehaviour
         _player = GameObject.Find("Bird Token Grey");
         _colliders = new Colliders();
         _board = new BoardCoordinates();
-        _rangeLocations = new Rangers(_player, _board);
-        
+        _rangeLocations = new Rangers(_player, _board, _colliders);
         _turnInProgress = false;
         _currentRange = 2;
         _isMoving = false;
@@ -75,7 +74,7 @@ public class PlayerController : MonoBehaviour
             if (range > 3 || range < 1) range = 1;
             _currentRange = range;
         }
-        _rangeLocations.Refill();
+        _rangeLocations.Refill(_player);
         _colliders.ReFill(_player.transform.position);
     }
 
@@ -92,7 +91,6 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionStay2D()
     {
         StopMoving();
-        //ToDo correct the final position
     }
 
     private void CheckMove(Vector3 mouseCalcPos)
@@ -107,10 +105,7 @@ public class PlayerController : MonoBehaviour
         var gp = _rangeLocations.CheckRangerPoint(locToCheck);
         var cc = _colliders.CheckIfColliderPoint(locToCheck);
         var bp = _board.IsValidBoardPoint(locToCheck);
-        print($"Location to Check {locToCheck.x}, {locToCheck.y}");
-        //print($"Grid Point: {gp}");
-        //print($"Circle Collider {cc}");
-        //print($"Board Point {bp}");
+        //print($"Location to Check {locToCheck.x}, {locToCheck.y}");
         if (!gp || cc || !bp) return; 
         //_player.transform.position = new Vector2(_originalX, _originalY);
         _isMoving = true;

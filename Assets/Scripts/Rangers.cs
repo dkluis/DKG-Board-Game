@@ -7,14 +7,16 @@ using UnityEngine.UI;
 public class Rangers
 {
     private List<BoardLocation> _rangerPoints = new List<BoardLocation>();
-    private readonly GameObject _player;
+    private int _range;
+    private Vector2 _playerPosition; 
     private readonly BoardCoordinates _boardPoints;
+    private readonly Colliders _colliders;
 
-    public Rangers(GameObject player, BoardCoordinates boardPoints)
+    public Rangers(GameObject player, BoardCoordinates boardPoints, Colliders colliders)
     {
-        _player = player;
         _boardPoints = boardPoints;
-        Refill();
+        _colliders = colliders;
+        Refill(player);
     }
     
     public bool CheckRangerPoint(Vector2 position)
@@ -23,22 +25,23 @@ public class Rangers
         return boardLocation is { };
     }
 
-    public void Refill()
+    public void Refill(GameObject player)
     {
-        ResetGridPoints();
+        _range = player.GetComponent<PlayerController>().range;
+        _playerPosition = player.transform.position;
+        ResetAllRangeIndicators();
         _rangerPoints = new List<BoardLocation>();
-        var currentPos = _player.transform.position;
-        var range = _player.GetComponent<PlayerController>().range;
-        Debug.Log($"Base Location for Player in Grid {currentPos.x}, {currentPos.y} with Range of {range}");
-        for (var x = range * -1; x <= range; x++)
+
+        Debug.Log($"Base Location for Player in Grid {_playerPosition.x}, {_playerPosition.y} with Range of {_range}");
+        for (var x = _range * -1; x <= _range; x++)
         {
-            for (var y = range * -1; y <= range; y++)
+            for (var y = _range * -1; y <= _range; y++)
             {
                 var totalDistance = Math.Abs(x) + Math.Abs(y);
-                if (totalDistance > range) continue;
-                var newPos = new Vector2(x + currentPos.x, y + currentPos.y);
+                if (totalDistance > _range) continue;
+                var newPos = new Vector2(x + _playerPosition.x, y + _playerPosition.y);
                 var boardLocation = new BoardLocation($"GridPoint ({newPos.x},{newPos.y})", "GridPoint", newPos);
-                var gridPointType = totalDistance switch
+                var rangeIndType = totalDistance switch
                 {
                     0 => "GridPoint Home",
                     1 => "GridPoint Green",
@@ -47,19 +50,18 @@ public class Rangers
                     _ => "GridPoint Home"
                 };
                 if (!_boardPoints.IsValidBoardPoint(newPos)) continue;
+                //if (!IsValidRouteAvailable(newPos)) continue;
                 _rangerPoints.Add(boardLocation);
-                InitGridPoint(gridPointType, newPos);
+                InitRangeIndicator(rangeIndType, newPos);
             }
         }
     }
     
     [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
-    private void  CullGrid()
+    private bool IsValidRouteAvailable(Vector2 toPosition)
     {
+        
         /*
-        var playerPos = GameObject.Find("Bird Token Grey").transform.position;
-        var playerPosX = playerPos.x;
-        var playerPosY = playerPos.y;
         foreach (var rangePoint in RangerPoints)
         {
             var rangePosX = rangePoint.Location.x;
@@ -75,15 +77,16 @@ public class Rangers
             Debug.Log(rangePoint.Location);  
         }
         */
+        return true;
     }
 
-    private static void InitGridPoint(string gpType, Vector2 position)
+    private static void InitRangeIndicator(string rpIndType, Vector2 position)
     {
-        var requestedGo = GameObject.Find(gpType);
+        var requestedGo = GameObject.Find(rpIndType);
         BoardActions.Init(requestedGo, position);
     }
 
-    private static void ResetGridPoints()
+    private static void ResetAllRangeIndicators()
     {
         var allGridPoints = GameObject.FindGameObjectsWithTag("RangePoint");
         foreach (var gridPoint in allGridPoints)
