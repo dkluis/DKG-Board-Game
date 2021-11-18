@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Rangers
 {
@@ -16,7 +15,6 @@ public class Rangers
     {
         _boardPoints = boardPoints;
         _colliders = colliders;
-        Refill(player);
     }
 
     public bool CheckRangerPoint(Vector2 position)
@@ -31,39 +29,84 @@ public class Rangers
         _playerPosition = player.transform.position;
         ResetAllRangeIndicators();
         _rangerPoints = new List<BoardLocation>();
-
-        Debug.Log($"Base Location for Player in Grid {_playerPosition.x}, {_playerPosition.y} with Range of {_range}");
-        for (var x = _range * -1; x <= _range; x++)
+        Debug.Log($"Refill RangePoints from location {_playerPosition.x}, {_playerPosition.y} with Range of {_range}");
+        
+        // Build the Y-axis for X
+        var x0 = (int) _playerPosition.x;
+        var y0 = (int) _playerPosition.y;
+        for (var y = y0; y <= _range + y0; y++)
         {
-            for (var y = _range * -1; y <= _range; y++)
+            var totalDistance = Math.Abs((Math.Abs(x0) + Math.Abs(y)) - (Math.Abs(x0) + Math.Abs(y0)));
+            BuildRangePoint(new Vector2(x0, y), totalDistance, new Vector2(x0, y0));
+        }
+        for (var y = y0; y >= ((y0 - _range )); y--)
+        {
+            var totalDistance = Math.Abs((Math.Abs(x0) + Math.Abs(y)) - (Math.Abs(x0) + Math.Abs(y0)));
+            BuildRangePoint(new Vector2(x0, y), totalDistance, new Vector2(x0, y0));
+        }
+        // Build the X-axis for Y
+        for (var x = x0; x <= _range + x0; x++)
+        {
+            var totalDistance = Math.Abs((Math.Abs(x) + Math.Abs(y0)) - (Math.Abs(x0) + Math.Abs(y0)));
+            BuildRangePoint(new Vector2(x, y0), totalDistance, new Vector2(x0, y0));
+        }
+        for (var x = x0; x >= (x0 - _range); x--)
+        {
+            var totalDistance = Math.Abs((Math.Abs(x) + Math.Abs(y0)) - (Math.Abs(x0) + Math.Abs(y0)));
+            BuildRangePoint(new Vector2(x, y0), totalDistance, new Vector2(x0, y0));
+        }
+        
+
+        // Now we can use RangePointChecker
+        // Build the Y-axis -1 to -2 for y = -1 to -2
+        for (var x2 = -1; x2 > _range * -1; x2--)
+        {
+            if (!CheckRangerPoint(new Vector2(x2, 0))) return;
+            for (var y2 = -1; y2 > _range * -1; y2--)
             {
-                var totalDistance = Math.Abs(x) + Math.Abs(y);
-                if (totalDistance > _range) continue;
-                var newPos = new Vector2(x + _playerPosition.x, y + _playerPosition.y);
-                var boardLocation = new BoardLocation($"GridPoint ({newPos.x},{newPos.y})", "GridPoint", newPos);
-                var rangeIndType = totalDistance switch
-                {
-                    0 => "GridPoint Home",
-                    1 => "GridPoint Green",
-                    2 => "GridPoint Blue",
-                    3 => "GridPoint Red",
-                    _ => "GridPoint Home"
-                };
-                if (!_boardPoints.IsValidBoardPoint(newPos)) continue;
-                if (!IsValidRouteAvailable(newPos)) continue;
-                _rangerPoints.Add(boardLocation);
-                InitRangeIndicator(rangeIndType, newPos);
+                var totalDistance = Math.Abs(x2) + Math.Abs(y2);
+                BuildRangePoint(new Vector2(x2, y2), totalDistance, new Vector2(x2, 0));
+            }
+        }
+        
+        // Now we can use RangePointChecker
+        // Build the Y-axis 1 to 2 for y = -1 to -2
+        for (var x2 = 1; x2 < _range; x2++)
+        {
+            if (!CheckRangerPoint(new Vector2(x2, 0))) return;
+            for (var y2 = -1; y2 > _range * -1; y2--)
+            {
+                var totalDistance = Math.Abs(x2) + Math.Abs(y2);
+                BuildRangePoint(new Vector2(x2, y2), totalDistance, new Vector2(x2, 0));
             }
         }
     }
 
-    [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
-    private bool IsValidRouteAvailable(Vector2 toPosition)
+    private void BuildRangePoint(Vector2 toPosition, int distance, Vector2 fromPosition)
     {
-        var playerX = (int) _playerPosition.x;
-        var playerY = (int) _playerPosition.y;
-        var toPosX = (int) toPosition.x;
-        var toPosY = (int) toPosition.y;
+        if (distance > _range) return;
+        var rangeIndType = distance switch
+        {
+            0 => "GridPoint Home",
+            1 => "GridPoint Green",
+            2 => "GridPoint Blue",
+            3 => "GridPoint Red",
+            _ => "GridPoint Home"
+        };
+        var boardLocation = new BoardLocation($"GridPoint ({toPosition.x},{toPosition.y})", "GridPoint", toPosition);
+        if (!_boardPoints.IsValidBoardPoint(toPosition)) return;
+        if (!IsValidRouteAvailable(toPosition, fromPosition)) return;
+        _rangerPoints.Add(boardLocation);
+        InitRangeIndicator(rangeIndType, toPosition);
+    }
+
+    [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
+    private bool IsValidRouteAvailable(Vector2 toPosition, Vector2 fromPosition)
+    {
+        var playerX = fromPosition.x;
+        var playerY = fromPosition.y;
+        var toPosX = toPosition.x;
+        var toPosY = toPosition.y;
 
         if (playerX == toPosX && playerY != toPosY)
         {
@@ -85,7 +128,7 @@ public class Rangers
 
             return true;
         }
-
+        
         if (playerY == toPosY && playerX != toPosX)
         {
             if (toPosX > playerX)
@@ -118,10 +161,10 @@ public class Rangers
 
     private static void ResetAllRangeIndicators()
     {
-        var allGridPoints = GameObject.FindGameObjectsWithTag("RangePoint");
-        foreach (var gridPoint in allGridPoints)
+        var allRangePoints = GameObject.FindGameObjectsWithTag("RangePoint");
+        foreach (var rangePoint in allRangePoints)
         {
-            BoardActions.Remove(gridPoint);
+            BoardActions.Remove(rangePoint);
         }
     }
 }
