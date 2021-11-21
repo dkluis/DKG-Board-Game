@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="71f554c9-05e0-43f6-9fb5-a933d4478d3a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DKG-Board-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DKG-Board-Game/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/InputSystemTest.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/InputSystemTest.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Rangers.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Rangers.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -146,7 +147,7 @@
       <workItem from="1637318277903" duration="7937000" />
       <workItem from="1637353582240" duration="11249000" />
       <workItem from="1637416180324" duration="7458000" />
-      <workItem from="1637503594812" duration="5289000" />
+      <workItem from="1637503594812" duration="7004000" />
     </task>
     <servers />
   </component>
@@ -171,23 +172,6 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Assets/Scripts/Rangers.cs</url>
-          <line>107</line>
-          <properties documentPath="$PROJECT_DIR$/Assets/Scripts/Rangers.cs" initialLine="107" containingFunctionPresentation="method 'Refill'">
-            <startOffsets>
-              <option value="4895" />
-            </startOffsets>
-            <endOffsets>
-              <option value="4912" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="Frame#BoardLocations.ResetGridPoints" memberName="allGridPoints" />

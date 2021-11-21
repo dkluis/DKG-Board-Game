@@ -105,11 +105,11 @@ public class Rangers
         }
         
         // Evaluate from the Y-Axis going up with X axis going right
-        var yModPlus = 1;
-        for (var xLoop5 = x0 + 1; xLoop5 <= _range + x0; xLoop5++)
+        var yModPlus = 0;
+        for (var xLoop5 = x0; xLoop5 <= _range + x0; xLoop5++)
         {
             if (!CheckRangerPoint(new Vector2(xLoop5, y0))) break;
-            for (var yLoop5 = y0 + 1; yLoop5 <= _range - yModPlus; yLoop5++)
+            for (var yLoop5 = y0; yLoop5 <= _range + y0 - yModPlus; yLoop5++)
             {
                 if (CheckRangerPoint(new Vector2(xLoop5, yLoop5))) continue;
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop5, yLoop5))) break;
@@ -119,11 +119,11 @@ public class Rangers
         }
         
         //Evaluate from the Y-Axis going up with the X axis going left
-        yModPlus = 1;
-        for (var xLoop6 = x0 - 1; xLoop6 >= (_range * -1) + x0; xLoop6--)
+        yModPlus = 0;
+        for (var xLoop6 = x0; xLoop6 >= (_range * -1) + x0; xLoop6--)
         {
             if (!CheckRangerPoint(new Vector2(xLoop6, y0))) break;
-            for (var yLoop6 = y0 + 1; yLoop6 <= _range - yModPlus; yLoop6++)
+            for (var yLoop6 = y0; yLoop6 <= _range + y0 - yModPlus; yLoop6++)
             {
                 if (CheckRangerPoint(new Vector2(xLoop6, yLoop6))) continue;
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop6, yLoop6))) break;
@@ -133,11 +133,11 @@ public class Rangers
         }
         
         //Evaluate from the Y-Axis going down with the X-Axis going right
-        var yModMinus = -1;
-        for (var xLoop7 = x0 - 1; xLoop7 >= (_range * -1) + x0; xLoop7--)
+        var yModMinus = 0;
+        for (var xLoop7 = x0; xLoop7 >= (_range * -1) + x0; xLoop7--)
         {
             if (!CheckRangerPoint(new Vector2(xLoop7, y0))) break;
-            for (var yLoop7 = y0 - 1; yLoop7 >= (_range * -1) - yModMinus; yLoop7--)
+            for (var yLoop7 = y0; yLoop7 >= (_range * -1) + y0 - yModMinus; yLoop7--)
             {
                 if (CheckRangerPoint(new Vector2(xLoop7, yLoop7))) continue;
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop7, yLoop7))) break;
@@ -147,11 +147,11 @@ public class Rangers
         }
         
         //Evalue from the Y-Axis going down with the X-Axis going left
-        yModMinus = -1;
-        for (var xLoop6 = x0  + 1 ; xLoop6 <= _range + x0; xLoop6++)
+        yModMinus = 0;
+        for (var xLoop6 = x0; xLoop6 <= _range + x0; xLoop6++)
         {
             if (!CheckRangerPoint(new Vector2(xLoop6, y0))) break;
-            for (var yLoop6 = y0 - 1; yLoop6 >= (_range * -1) - yModMinus; yLoop6--)
+            for (var yLoop6 = y0; yLoop6 >= (_range * -1) + y0 - yModMinus; yLoop6--)
             {
                 if (CheckRangerPoint(new Vector2(xLoop6, yLoop6))) continue;
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop6, yLoop6))) break;
