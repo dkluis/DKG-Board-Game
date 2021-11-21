@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,6 +8,8 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     private GameObject _player;
+    private GameObject _player1;
+    private GameObject _activePlayer;
     private float _originalX;
     private float _originalY;
     private bool _isMoving;
@@ -24,6 +27,8 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         _player = GameObject.Find("Bird Token Grey");
+        _player1 = GameObject.Find("Bird Token Grey 1");
+        _activePlayer = _player;
         _colliders = new Colliders();
         _board = new BoardCoordinates();
         _rangeLocations = new Rangers(_board, _colliders);
@@ -37,8 +42,8 @@ public class PlayerController : MonoBehaviour
     private void OnRange()
     {
         //RangeViewToggle(!_isShowingRange);
-        _colliders.Shuffle(_player.transform.position);
-        _rangeLocations.Refill(_player);
+        _colliders.Shuffle(_activePlayer.transform.position);
+        _rangeLocations.Refill(_activePlayer);
     }
 
     [UsedImplicitly]
@@ -66,7 +71,7 @@ public class PlayerController : MonoBehaviour
         if (_isMoving) return;
         if (_turnInProgress) return;
         _turnInProgress = true;
-        var position = _player.transform.position;
+        var position = _activePlayer.transform.position;
         print($"Changing Original Pos from ({_originalX},{_originalY}) to ({position.x},{position.y})");
         _originalX = position.x;
         _originalY = position.y;
@@ -75,8 +80,10 @@ public class PlayerController : MonoBehaviour
             if (range > 3 || range < 1) range = 1;
             _currentRange = range;
         }
-        _rangeLocations.Refill(_player);
-        _colliders.ReFill(_player.transform.position);
+
+        _activePlayer = _activePlayer.name == _player.name ? _player1 : _player;
+        _rangeLocations.Refill(_activePlayer);
+        _colliders.ReFill(_activePlayer.transform.position);
     }
 
     [UsedImplicitly]
@@ -94,6 +101,7 @@ public class PlayerController : MonoBehaviour
         StopMoving();
     }
 
+    [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
     private void CheckMove(Vector3 mouseCalcPos)
     {
         _isMoving = false;
@@ -101,28 +109,20 @@ public class PlayerController : MonoBehaviour
         var roundY = (float) Math.Round(_originalY + mouseCalcPos.y, 0);
         _point.x = roundX - _originalX;
         _point.y = roundY - _originalY;
-        //print($"Round {roundX}, {roundY} Point {_point.x}, {_point.y}");
         var locToCheck = new Vector2(_point.x, _point.y);
+        Debug.Log($"Distance to {_point.x},{_point.y} is: {Rangers.CalculateStepBetweenCoordinates(new Vector2(_originalX, _originalY), locToCheck)}");
         var gp = _rangeLocations.CheckRangerPoint(locToCheck);
         var cc = _colliders.CheckIfColliderPoint(locToCheck);
         var bp = _board.IsValidBoardPoint(locToCheck);
-        //print($"Location to Check {locToCheck.x}, {locToCheck.y}");
-        if (!gp || cc || !bp) return; 
-        //_player.transform.position = new Vector2(_originalX, _originalY);
+        if (!gp || cc || !bp) return;
         _isMoving = true;
     }
 
     private void Update()
     {
         if (!_isMoving) return;
-        _player.transform.position = _point;
+        _activePlayer.transform.position = _point;
         _isMoving = false;
-        /*
-        var position = _player.transform.position;
-        position = Vector3.MoveTowards(position, _point, Time.deltaTime * speed);
-        _player.transform.position = position;
-        if (Math.Abs(position.x - _point.x) < 0.00001f && Math.Abs(position.y - _point.y) < 0.00001f) _isMoving = false;
-        */
     }
 
     private void StopMoving()

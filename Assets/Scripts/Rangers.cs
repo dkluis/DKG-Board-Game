@@ -1,13 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
-
+// ReSharper disable RedundantArgumentDefaultValue
 
 public class Rangers
 {
     private List<BoardLocation> _rangerPoints = new List<BoardLocation>();
     private int _range;
-    private Vector2 _playerPosition;
+    private Vector2 _activePlayerPosition;
     private readonly BoardCoordinates _boardPoints;
     private readonly Colliders _colliders;
 
@@ -24,16 +25,16 @@ public class Rangers
     }
 
     [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
-    public void Refill(GameObject player)
+    public void Refill(GameObject activePlayer)
     {
-        _range = player.GetComponent<PlayerController>().range;
-        _playerPosition = player.transform.position;
+        _range = activePlayer.GetComponent<PlayerController>().range;
+        _activePlayerPosition = activePlayer.transform.position;
         ResetAllRangeIndicators();
         _rangerPoints = new List<BoardLocation>();
-        Debug.Log($"Refill RangePoints from location {_playerPosition.x}, {_playerPosition.y} with Range of {_range}");
+        Debug.Log($"Refill RangePoints from location {_activePlayerPosition.x}, {_activePlayerPosition.y} with Range of {_range}");
 
-        var x0 = (int) _playerPosition.x;
-        var y0 = (int) _playerPosition.y;
+        var x0 = (int) _activePlayerPosition.x;
+        var y0 = (int) _activePlayerPosition.y;
         // Build the X-Axis going right with Y going up
         var xModPlus = 0;
         for (var yLoop1 = y0; yLoop1 <= _range + y0; yLoop1++)
@@ -44,7 +45,7 @@ public class Rangers
             for (var xLoop1 = x0; xLoop1 <= _range + x0 - xModPlus; xLoop1++)
             {
                 if (CheckRangerPoint(new Vector2(xLoop1, yLoop1))) continue;
-                if (_playerPosition.x == xLoop1) continue;
+                if (_activePlayerPosition.x == xLoop1) continue;
                 if (!CheckRangerPoint(new Vector2(xLoop1 - 1, yLoop1))) continue; 
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop1, yLoop1))) continue;
                 BuildRangePoint(new Vector2(xLoop1, yLoop1), 0);
@@ -61,7 +62,7 @@ public class Rangers
             for (var xLoop2 = x0; xLoop2 <= _range + x0 - xModPlus; xLoop2++)
             {
                 if (CheckRangerPoint(new Vector2(xLoop2, yLoop2))) continue;
-                if (_playerPosition.x == xLoop2) continue;
+                if (_activePlayerPosition.x == xLoop2) continue;
                 if (!CheckRangerPoint(new Vector2(xLoop2 - 1, yLoop2))) continue;
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop2, yLoop2))) continue;
                 BuildRangePoint( new Vector2(xLoop2, yLoop2), 1);
@@ -79,7 +80,7 @@ public class Rangers
             for (var xLoop3 = x0; xLoop3 >= (_range * -1) + x0 - xModMinus; xLoop3--)
             {
                 if (CheckRangerPoint(new Vector2(xLoop3, yLoop3))) continue;
-                if (_playerPosition.x == xLoop3) continue;
+                if (_activePlayerPosition.x == xLoop3) continue;
                 if (!CheckRangerPoint(new Vector2(xLoop3 + 1, yLoop3))) continue; 
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop3, yLoop3))) continue;
                 BuildRangePoint( new Vector2(xLoop3, yLoop3), 2);
@@ -146,7 +147,7 @@ public class Rangers
             yModMinus--;
         }
         
-        //Evalue from the Y-Axis going down with the X-Axis going left
+        //Evaluate from the Y-Axis going down with the X-Axis going left
         yModMinus = 0;
         for (var xLoop6 = x0; xLoop6 <= _range + x0; xLoop6++)
         {
@@ -176,6 +177,35 @@ public class Rangers
         if (!_boardPoints.IsValidBoardPoint(toPosition)) return;
         _rangerPoints.Add(boardLocation);
         InitRangeIndicator(rangeIndType, toPosition);
+    }
+
+    public static int CalculateStepBetweenCoordinates(Vector2 fromPosition, Vector2 toPosition)
+    {
+        var xDelta = 0;
+        if (fromPosition.x >= 0 && toPosition.y >= 0)
+        {
+            xDelta = (int) Math.Abs(fromPosition.x - toPosition.x);
+        }
+        else if (toPosition.x < 0)
+        {
+            xDelta = (int) Math.Abs(fromPosition.x + toPosition.x);
+        }
+
+        var yDelta = 0;
+        if (fromPosition.y >= 0 && toPosition.x >= 0)
+        {
+            yDelta = (int) Math.Abs(fromPosition.y - toPosition.y);
+        } else if (toPosition.y >= 0)
+        {
+            yDelta = (int) Math.Abs(fromPosition.y - toPosition.y);
+        }
+        else if (toPosition.y < 0)
+        {
+            yDelta = (int) Math.Abs(fromPosition.y + toPosition.y);
+        }
+
+        var distance = xDelta + yDelta;
+        return distance;
     }
 
     private static void InitRangeIndicator(string rpIndType, Vector2 position)

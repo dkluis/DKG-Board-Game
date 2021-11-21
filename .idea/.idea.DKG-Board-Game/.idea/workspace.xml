@@ -7,6 +7,7 @@
     <list default="true" id="71f554c9-05e0-43f6-9fb5-a933d4478d3a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DKG-Board-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DKG-Board-Game/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/InputSystemTest.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/InputSystemTest.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/PlayerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/PlayerController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Rangers.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Rangers.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -95,10 +96,10 @@
       </option>
       <method v="2" />
     </configuration>
-    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="38221">
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" value="38221" />
+      <option name="pid" />
       <option name="projectPathOnTarget" />
       <option name="selectedOptions">
         <list />
@@ -147,7 +148,8 @@
       <workItem from="1637318277903" duration="7937000" />
       <workItem from="1637353582240" duration="11249000" />
       <workItem from="1637416180324" duration="7458000" />
-      <workItem from="1637503594812" duration="7004000" />
+      <workItem from="1637503594812" duration="12466000" />
+      <workItem from="1637534283914" duration="821000" />
     </task>
     <servers />
   </component>
@@ -172,6 +174,23 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Assets/Scripts/Rangers.cs</url>
+          <line>183</line>
+          <properties documentPath="$PROJECT_DIR$/Assets/Scripts/Rangers.cs" initialLine="187" containingFunctionPresentation="method 'CalculateStepBetweenCoordinates'">
+            <startOffsets>
+              <option value="8202" />
+            </startOffsets>
+            <endOffsets>
+              <option value="8217" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="Frame#BoardLocations.ResetGridPoints" memberName="allGridPoints" />
