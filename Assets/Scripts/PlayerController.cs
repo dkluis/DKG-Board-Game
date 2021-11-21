@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
         _player = GameObject.Find("Bird Token Grey");
         _colliders = new Colliders();
         _board = new BoardCoordinates();
-        _rangeLocations = new Rangers(_player, _board, _colliders);
+        _rangeLocations = new Rangers(_board, _colliders);
         _turnInProgress = false;
         _currentRange = 2;
         _isMoving = false;
@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
     {
         //RangeViewToggle(!_isShowingRange);
         _colliders.Shuffle(_player.transform.position);
+        _rangeLocations.Refill(_player);
     }
 
     [UsedImplicitly]

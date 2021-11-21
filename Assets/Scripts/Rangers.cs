@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
+
 
 public class Rangers
 {
@@ -11,7 +11,7 @@ public class Rangers
     private readonly BoardCoordinates _boardPoints;
     private readonly Colliders _colliders;
 
-    public Rangers(GameObject player, BoardCoordinates boardPoints, Colliders colliders)
+    public Rangers(BoardCoordinates boardPoints, Colliders colliders)
     {
         _boardPoints = boardPoints;
         _colliders = colliders;
@@ -23,6 +23,7 @@ public class Rangers
         return boardLocation is { };
     }
 
+    [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
     public void Refill(GameObject player)
     {
         _range = player.GetComponent<PlayerController>().range;
@@ -30,59 +31,84 @@ public class Rangers
         ResetAllRangeIndicators();
         _rangerPoints = new List<BoardLocation>();
         Debug.Log($"Refill RangePoints from location {_playerPosition.x}, {_playerPosition.y} with Range of {_range}");
-        
-        // Build the Y-axis for X
+
         var x0 = (int) _playerPosition.x;
         var y0 = (int) _playerPosition.y;
-        for (var y = y0; y <= _range + y0; y++)
+        // Build the X-Axis going right with Y going up
+        var xModPlus = 0;
+        //BuildRangePoint(new Vector2(x0,y0));
+        for (var yLoop1 = y0; yLoop1 <= _range + y0; yLoop1++)
         {
-            var totalDistance = Math.Abs((Math.Abs(x0) + Math.Abs(y)) - (Math.Abs(x0) + Math.Abs(y0)));
-            BuildRangePoint(new Vector2(x0, y), totalDistance, new Vector2(x0, y0));
+            if (_colliders.CheckIfColliderPoint(new Vector2(x0, yLoop1))) continue;
+            if (!CheckRangerPoint(new Vector2(x0, yLoop1 - 1)) && yLoop1 != y0) continue;
+            BuildRangePoint(new Vector2(x0, yLoop1), 0);
+            for (var xLoop1 = x0; xLoop1 <= _range + x0 - xModPlus; xLoop1++)
+            {
+                if (CheckRangerPoint(new Vector2(xLoop1, yLoop1))) continue;
+                if (_playerPosition.x == xLoop1) continue;
+                if (!CheckRangerPoint(new Vector2(xLoop1 - 1, yLoop1))) continue; 
+                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop1, yLoop1))) continue;
+                BuildRangePoint(new Vector2(xLoop1, yLoop1), 0);
+            }
+            xModPlus++;
         }
-        for (var y = y0; y >= ((y0 - _range )); y--)
+        // Build the X-Axis going right with Y going down
+        xModPlus = 1;
+        for (var yLoop2 = y0 - 1; yLoop2 >= (_range * -1) + y0; yLoop2--)
         {
-            var totalDistance = Math.Abs((Math.Abs(x0) + Math.Abs(y)) - (Math.Abs(x0) + Math.Abs(y0)));
-            BuildRangePoint(new Vector2(x0, y), totalDistance, new Vector2(x0, y0));
+            if (_colliders.CheckIfColliderPoint(new Vector2(x0, yLoop2))) continue;
+            if (!CheckRangerPoint(new Vector2(x0, yLoop2 + 1))) continue; 
+            BuildRangePoint(new Vector2(x0, yLoop2), 1);
+            for (var xLoop2 = x0; xLoop2 <= _range + x0 - xModPlus; xLoop2++)
+            {
+                if (CheckRangerPoint(new Vector2(xLoop2, yLoop2))) continue;
+                if (_playerPosition.x == xLoop2) continue;
+                if (!CheckRangerPoint(new Vector2(xLoop2 - 1, yLoop2))) continue;
+                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop2, yLoop2))) continue;
+                BuildRangePoint( new Vector2(xLoop2, yLoop2), 1);
+            }
+            xModPlus++;
         }
-        // Build the X-axis for Y
-        for (var x = x0; x <= _range + x0; x++)
-        {
-            var totalDistance = Math.Abs((Math.Abs(x) + Math.Abs(y0)) - (Math.Abs(x0) + Math.Abs(y0)));
-            BuildRangePoint(new Vector2(x, y0), totalDistance, new Vector2(x0, y0));
-        }
-        for (var x = x0; x >= (x0 - _range); x--)
-        {
-            var totalDistance = Math.Abs((Math.Abs(x) + Math.Abs(y0)) - (Math.Abs(x0) + Math.Abs(y0)));
-            BuildRangePoint(new Vector2(x, y0), totalDistance, new Vector2(x0, y0));
-        }
-        
 
-        // Now we can use RangePointChecker
-        // Build the Y-axis -1 to -2 for y = -1 to -2
-        for (var x2 = -1; x2 > _range * -1; x2--)
+        // Build the X-Axis going left with Y going up
+        var xModMinus = 0;
+        for (var yLoop3 = y0; yLoop3 <= _range + y0; yLoop3++)
         {
-            if (!CheckRangerPoint(new Vector2(x2, 0))) return;
-            for (var y2 = -1; y2 > _range * -1; y2--)
+            if (_colliders.CheckIfColliderPoint(new Vector2(x0, yLoop3))) continue;
+            if (!CheckRangerPoint(new Vector2(x0, yLoop3 - 1)) && yLoop3 != y0) continue;
+            if (!CheckRangerPoint(new Vector2(x0, yLoop3))) BuildRangePoint(new Vector2(x0, yLoop3), 2);
+            for (var xLoop3 = x0; xLoop3 >= (_range * -1) + x0 - xModMinus; xLoop3--)
             {
-                var totalDistance = Math.Abs(x2) + Math.Abs(y2);
-                BuildRangePoint(new Vector2(x2, y2), totalDistance, new Vector2(x2, 0));
+                if (CheckRangerPoint(new Vector2(xLoop3, yLoop3))) continue;
+                if (_playerPosition.x == xLoop3) continue;
+                if (!CheckRangerPoint(new Vector2(xLoop3 + 1, yLoop3))) continue; 
+                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop3, yLoop3))) continue;
+                BuildRangePoint( new Vector2(xLoop3, yLoop3), 2);
             }
+            xModMinus--;
         }
         
-        // Now we can use RangePointChecker
-        // Build the Y-axis 1 to 2 for y = -1 to -2
-        for (var x2 = 1; x2 < _range; x2++)
+        // Build the X-Axis going right with Y going down
+        xModMinus = -1;
+        for (var yLoop4 = y0; yLoop4 >= (_range * -1) + y0; yLoop4--)
         {
-            if (!CheckRangerPoint(new Vector2(x2, 0))) return;
-            for (var y2 = -1; y2 > _range * -1; y2--)
+            if (y0 == yLoop4) continue;
+            if (_colliders.CheckIfColliderPoint(new Vector2(x0, yLoop4))) continue;
+            if (!CheckRangerPoint(new Vector2(x0, yLoop4 + 1))) continue;
+            for (var xLoop4 = x0; xLoop4 >= (_range * -1) + x0 - xModMinus; xLoop4--)
             {
-                var totalDistance = Math.Abs(x2) + Math.Abs(y2);
-                BuildRangePoint(new Vector2(x2, y2), totalDistance, new Vector2(x2, 0));
+                if (CheckRangerPoint(new Vector2(xLoop4, yLoop4))) continue;
+                if (!CheckRangerPoint(new Vector2(xLoop4 + 1, yLoop4))) continue;
+                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop4, yLoop4))) continue;
+                BuildRangePoint( new Vector2(xLoop4, yLoop4), 3);
             }
+            xModMinus--;
         }
+        
+        
     }
 
-    private void BuildRangePoint(Vector2 toPosition, int distance, Vector2 fromPosition)
+    private void BuildRangePoint(Vector2 toPosition, int distance = 4)
     {
         if (distance > _range) return;
         var rangeIndType = distance switch
@@ -91,66 +117,12 @@ public class Rangers
             1 => "GridPoint Green",
             2 => "GridPoint Blue",
             3 => "GridPoint Red",
-            _ => "GridPoint Home"
+            _ => "GridPoint White"
         };
         var boardLocation = new BoardLocation($"GridPoint ({toPosition.x},{toPosition.y})", "GridPoint", toPosition);
         if (!_boardPoints.IsValidBoardPoint(toPosition)) return;
-        if (!IsValidRouteAvailable(toPosition, fromPosition)) return;
         _rangerPoints.Add(boardLocation);
         InitRangeIndicator(rangeIndType, toPosition);
-    }
-
-    [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
-    private bool IsValidRouteAvailable(Vector2 toPosition, Vector2 fromPosition)
-    {
-        var playerX = fromPosition.x;
-        var playerY = fromPosition.y;
-        var toPosX = toPosition.x;
-        var toPosY = toPosition.y;
-
-        if (playerX == toPosX && playerY != toPosY)
-        {
-            if (toPosY > playerY)
-            {
-                for (var i = playerY; i < toPosY; i++)
-                {
-                    if (_colliders.CheckIfColliderPoint(new Vector2(toPosX, i))) return false;
-                }
-            }
-            else
-            {
-                if (toPosY >= playerY) return true;
-                for (var i = playerY; i > toPosY; i--)
-                {
-                    if (_colliders.CheckIfColliderPoint(new Vector2(toPosX, i))) return false;
-                }
-            }
-
-            return true;
-        }
-        
-        if (playerY == toPosY && playerX != toPosX)
-        {
-            if (toPosX > playerX)
-            {
-                for (var i = playerX; i < toPosX; i++)
-                {
-                    if (_colliders.CheckIfColliderPoint(new Vector2(i, toPosY))) return false;
-                }
-            }
-            else
-            {
-                if (toPosX >= playerX) return true;
-                for (var i = playerX; i > toPosX; i--)
-                {
-                    if (_colliders.CheckIfColliderPoint(new Vector2(i, toPosY))) return false;
-                }
-            }
-
-            return true;
-        }
-
-        return true;
     }
 
     private static void InitRangeIndicator(string rpIndType, Vector2 position)
