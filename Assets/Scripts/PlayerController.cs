@@ -42,7 +42,6 @@ public class PlayerController : MonoBehaviour
     [UsedImplicitly]
     private void OnRange()
     {
-        //RangeViewToggle(!_isShowingRange);
         _colliders.Shuffle(_activePlayer.transform.position);
         _rangeLocations.Refill(_activePlayer);
     }
@@ -57,6 +56,7 @@ public class PlayerController : MonoBehaviour
     private void OnTurnOff()
     {
         if (_isMoving) StopMoving();
+        // ToDo add code for finalizing turn
         _turnInProgress = false;
     }
 

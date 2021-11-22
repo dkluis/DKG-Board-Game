@@ -128,7 +128,7 @@ public class Rangers
             {
                 if (CheckRangerPoint(new Vector2(xLoop6, yLoop6))) continue;
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop6, yLoop6))) break;
-                BuildRangePoint(new Vector2(xLoop6, yLoop6), 4);
+                BuildRangePoint(new Vector2(xLoop6, yLoop6), 5);
             }
             yModPlus++;
         }
@@ -142,7 +142,7 @@ public class Rangers
             {
                 if (CheckRangerPoint(new Vector2(xLoop7, yLoop7))) continue;
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop7, yLoop7))) break;
-                BuildRangePoint(new Vector2(xLoop7, yLoop7), 4);
+                BuildRangePoint(new Vector2(xLoop7, yLoop7), 6);
             }
             yModMinus--;
         }
@@ -156,7 +156,7 @@ public class Rangers
             {
                 if (CheckRangerPoint(new Vector2(xLoop6, yLoop6))) continue;
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop6, yLoop6))) break;
-                BuildRangePoint(new Vector2(xLoop6, yLoop6), 4);
+                BuildRangePoint(new Vector2(xLoop6, yLoop6), 7);
             }
             yModMinus--;
         }
@@ -164,14 +164,17 @@ public class Rangers
 
     private void BuildRangePoint(Vector2 toPosition, int distance = 4)
     {
-        //if (distance > _range) return;
         var rangeIndType = distance switch
         {
             0 => "GridPoint Home",
             1 => "GridPoint Green",
             2 => "GridPoint Blue",
             3 => "GridPoint Red",
-            _ => "GridPoint White"
+            4 => "GridPoint AltHome",
+            5 => "GridPoint AltBlue",
+            6 => "GridPoint AltRed",
+            7 => "GridPoint AltGreen",
+            _ => "GridPoint AltRed"
         };
         var boardLocation = new BoardLocation($"GridPoint ({toPosition.x},{toPosition.y})", "GridPoint", toPosition);
         if (!_boardPoints.IsValidBoardPoint(toPosition)) return;
