@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
+[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
 public class PlayerController : MonoBehaviour
 {
     private GameObject _player;
@@ -68,7 +69,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnNewTurn()
     {
-        if (_isMoving) return;
         if (_turnInProgress) return;
         _turnInProgress = true;
         var position = _activePlayer.transform.position;
@@ -80,8 +80,7 @@ public class PlayerController : MonoBehaviour
             if (range > 3 || range < 1) range = 1;
             _currentRange = range;
         }
-
-        _activePlayer = _activePlayer.name == _player.name ? _player1 : _player;
+        
         _rangeLocations.Refill(_activePlayer);
         _colliders.ReFill(_activePlayer.transform.position);
     }
@@ -104,13 +103,19 @@ public class PlayerController : MonoBehaviour
     [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
     private void CheckMove(Vector3 mouseCalcPos)
     {
+
         _isMoving = false;
         var roundX = (float) Math.Round(_originalX + mouseCalcPos.x, 0);
         var roundY = (float) Math.Round(_originalY + mouseCalcPos.y, 0);
         _point.x = roundX - _originalX;
         _point.y = roundY - _originalY;
         var locToCheck = new Vector2(_point.x, _point.y);
-        Debug.Log($"Distance to {_point.x},{_point.y} is: {Rangers.CalculateStepBetweenCoordinates(new Vector2(_originalX, _originalY), locToCheck)}");
+        //Debug.Log($"Distance to {_point.x},{_point.y} is: {Rangers.CalculateStepBetweenCoordinates(new Vector2(_originalX, _originalY), locToCheck)}");
+        if (CheckIfOtherTokenIsClicked(locToCheck))
+        {
+            _activePlayer = _activePlayer.name == _player.name ? _player1 : _player;
+            _rangeLocations.Refill(_activePlayer);
+        }
         var gp = _rangeLocations.CheckRangerPoint(locToCheck);
         var cc = _colliders.CheckIfColliderPoint(locToCheck);
         var bp = _board.IsValidBoardPoint(locToCheck);
@@ -128,5 +133,18 @@ public class PlayerController : MonoBehaviour
     private void StopMoving()
     {
         _isMoving = false;
+    }
+
+    private bool CheckIfOtherTokenIsClicked(Vector2 clickedLocation)
+    {
+        var gOList = GameObject.FindGameObjectsWithTag("Player");
+        foreach (var gO in gOList)
+        {
+            if ((Vector2) gO.transform.position != clickedLocation) continue;
+            if (gO.name != _activePlayer.name)
+                return true;
+        }
+
+        return false;
     }
 }
