@@ -13,11 +13,13 @@ public class PlayerController : MonoBehaviour
     private GameObject _activePlayer;
     private float _originalX;
     private float _originalY;
+    private float _originalX1;
+    private float _originalY1;
     private bool _isMoving;
     private bool _turnInProgress;
 
     private Vector2 _point;
-    public int speed = 5;
+    public int speed;
     public int range;
     private int _currentRange;
 
@@ -126,8 +128,13 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         if (!_isMoving) return;
-        _activePlayer.transform.position = _point;
-        _isMoving = false;
+        //_activePlayer.transform.position = _point;
+        //_isMoving = false;
+        
+        var position = _activePlayer.transform.position;
+        position = Vector3.MoveTowards(position, _point, Time.deltaTime * speed);
+        _activePlayer.transform.position = position;
+        if (Math.Abs(position.x - _point.x) < 0.00001 && Math.Abs(position.y - _point.y) < 0.00001) _isMoving = false;
     }
 
     private void StopMoving()
