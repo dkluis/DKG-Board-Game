@@ -10,6 +10,12 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
+# The alternate build directories
+/DKG-Board-Game-Web/
+/DKP-Board-Game-iOS/
+.idea/
+.DS_Store
+
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta
 
@@ -24,6 +30,7 @@
 
 # Visual Studio cache directory
 .vs/
+.vsconfig
 
 # Gradle cache directory
 .gradle/
@@ -61,4 +68,3 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-.DS_Store
