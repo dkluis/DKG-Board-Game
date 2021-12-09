@@ -13,8 +13,7 @@ public class PlayerController : MonoBehaviour
     private GameObject _activePlayer;
     private float _originalX;
     private float _originalY;
-    private float _originalX1;
-    private float _originalY1;
+    private bool _tokenHasPlayed;
     private bool _isMoving;
     private bool _turnInProgress;
 
@@ -38,6 +37,7 @@ public class PlayerController : MonoBehaviour
         _turnInProgress = false;
         _currentRange = 2;
         _isMoving = false;
+        _tokenHasPlayed = false;
         OnNewTurn();
     }
 
@@ -60,6 +60,7 @@ public class PlayerController : MonoBehaviour
         if (_isMoving) StopMoving();
         // ToDo add code for finalizing turn
         _turnInProgress = false;
+        _tokenHasPlayed = false;
     }
 
     [UsedImplicitly]
@@ -82,7 +83,8 @@ public class PlayerController : MonoBehaviour
             if (range > 3 || range < 1) range = 1;
             _currentRange = range;
         }
-        
+
+        _tokenHasPlayed = false;
         _rangeLocations.Refill(_activePlayer);
         _colliders.ReFill(_activePlayer.transform.position);
     }
@@ -112,12 +114,14 @@ public class PlayerController : MonoBehaviour
         _point.x = roundX - _originalX;
         _point.y = roundY - _originalY;
         var locToCheck = new Vector2(_point.x, _point.y);
-        //Debug.Log($"Distance to {_point.x},{_point.y} is: {Rangers.CalculateStepBetweenCoordinates(new Vector2(_originalX, _originalY), locToCheck)}");
-        if (CheckIfOtherTokenIsClicked(locToCheck))
+
+        if (CheckIfOtherTokenIsClicked(locToCheck) && !_tokenHasPlayed)
         {
             _activePlayer = _activePlayer.name == _player.name ? _player1 : _player;
             _rangeLocations.Refill(_activePlayer);
+            _tokenHasPlayed = true;
         }
+
         var gp = _rangeLocations.CheckRangerPoint(locToCheck);
         var cc = _colliders.CheckIfColliderPoint(locToCheck);
         var bp = _board.IsValidBoardPoint(locToCheck);
