@@ -44,8 +44,8 @@ public class PlayerController : MonoBehaviour
     [UsedImplicitly]
     private void OnRange()
     {
-        _colliders.Shuffle(_activePlayer.transform.position);
-        _rangeLocations.Refill(_activePlayer);
+        //_colliders.Shuffle(_activePlayer.transform.position);
+        //_rangeLocations.Refill(_activePlayer);
     }
 
     [UsedImplicitly]
@@ -85,8 +85,9 @@ public class PlayerController : MonoBehaviour
         }
 
         _tokenHasPlayed = false;
+        _colliders.Shuffle(_activePlayer.transform.position);
         _rangeLocations.Refill(_activePlayer);
-        _colliders.ReFill(_activePlayer.transform.position);
+        //_colliders.ReFill(_activePlayer.transform.position);
     }
 
     [UsedImplicitly]
