@@ -8,9 +8,13 @@ using UnityEngine.SceneManagement;
 [SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
 public class PlayerController : MonoBehaviour
 {
-    private GameObject _player;
-    private GameObject _player1;
-    private GameObject _activePlayer;
+    private GameObject _token1;
+    private GameObject _token2;
+    private GameObject _activeToken;
+    private int _activeTokenInt;
+    private UnityEngine.UI.Text _token1Text;
+    private UnityEngine.UI.Text _token2Text;
+    private UnityEngine.UI.Text _statusText;
     private float _originalX;
     private float _originalY;
     private bool _tokenHasPlayed;
@@ -28,9 +32,17 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        _player = GameObject.Find("Bird Token Grey");
-        _player1 = GameObject.Find("Bird Token Grey 1");
-        _activePlayer = _player;
+        _token1 = GameObject.Find("Bird Token Grey");
+        _token2 = GameObject.Find("Bird Token Grey 1");
+        _token1Text = GameObject.Find("Token1").GetComponent<UnityEngine.UI.Text>();
+        _token2Text = GameObject.Find("Token2").GetComponent<UnityEngine.UI.Text>();
+        _statusText = GameObject.Find("Status").GetComponent<UnityEngine.UI.Text>();
+        _activeToken = _token1;
+        _activeTokenInt = 1;
+        _token1Text.text = "Green Active";
+        _token2Text.text = "Orange InActive";
+        _statusText.text = "Status: Turn 1 - Green Active (Use M for Menu, Use O to stop Turn)";
+        
         _colliders = new Colliders();
         _board = new BoardCoordinates();
         _rangeLocations = new Rangers(_board, _colliders);
@@ -44,8 +56,8 @@ public class PlayerController : MonoBehaviour
     [UsedImplicitly]
     private void OnRange()
     {
-        //_colliders.Shuffle(_activePlayer.transform.position);
-        //_rangeLocations.Refill(_activePlayer);
+        //_colliders.Shuffle(_activeToken.transform.position);
+        //_rangeLocations.Refill(_activeToken);
     }
 
     [UsedImplicitly]
@@ -61,6 +73,9 @@ public class PlayerController : MonoBehaviour
         // ToDo add code for finalizing turn
         _turnInProgress = false;
         _tokenHasPlayed = false;
+        _token1Text.text = "Green InActive";
+        _token2Text.text = "Orange InActive";
+        _statusText.text = "Status: Turn 1 - Ended (use N to start new turn)";
     }
 
     [UsedImplicitly]
@@ -74,7 +89,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_turnInProgress) return;
         _turnInProgress = true;
-        var position = _activePlayer.transform.position;
+        var position = _activeToken.transform.position;
         print($"Changing Original Pos from ({_originalX},{_originalY}) to ({position.x},{position.y})");
         _originalX = position.x;
         _originalY = position.y;
@@ -85,9 +100,9 @@ public class PlayerController : MonoBehaviour
         }
 
         _tokenHasPlayed = false;
-        _colliders.Shuffle(_activePlayer.transform.position);
-        _rangeLocations.Refill(_activePlayer);
-        //_colliders.ReFill(_activePlayer.transform.position);
+        _colliders.Shuffle(_activeToken.transform.position);
+        _rangeLocations.Refill(_activeToken);
+        //_colliders.ReFill(_activeToken.transform.position);
     }
 
     [UsedImplicitly]
@@ -118,9 +133,12 @@ public class PlayerController : MonoBehaviour
 
         if (CheckIfOtherTokenIsClicked(locToCheck) && !_tokenHasPlayed)
         {
-            _activePlayer = _activePlayer.name == _player.name ? _player1 : _player;
-            _rangeLocations.Refill(_activePlayer);
+            _activeToken = _activeToken.name == _token1.name ? _token2 : _token1;
+            _rangeLocations.Refill(_activeToken);
             _tokenHasPlayed = true;
+            _token1Text.text = "Green InActive";
+            _token2Text.text = "Orange Active";
+            _statusText.text = "Status: Turn 1 - Orange Active";
         }
 
         var gp = _rangeLocations.CheckRangerPoint(locToCheck);
@@ -133,12 +151,12 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         if (!_isMoving) return;
-        //_activePlayer.transform.position = _point;
+        //_activeToken.transform.position = _point;
         //_isMoving = false;
         
-        var position = _activePlayer.transform.position;
+        var position = _activeToken.transform.position;
         position = Vector3.MoveTowards(position, _point, Time.deltaTime * speed);
-        _activePlayer.transform.position = position;
+        _activeToken.transform.position = position;
         if (Math.Abs(position.x - _point.x) < 0.00001 && Math.Abs(position.y - _point.y) < 0.00001) _isMoving = false;
     }
 
@@ -153,7 +171,7 @@ public class PlayerController : MonoBehaviour
         foreach (var gO in gOList)
         {
             if ((Vector2) gO.transform.position != clickedLocation) continue;
-            if (gO.name != _activePlayer.name)
+            if (gO.name != _activeToken.name)
                 return true;
         }
 
