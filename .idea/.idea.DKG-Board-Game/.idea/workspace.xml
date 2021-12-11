@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="71f554c9-05e0-43f6-9fb5-a933d4478d3a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DKG-Board-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DKG-Board-Game/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/PlayerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/PlayerController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Rangers.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Rangers.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,10 +99,10 @@
       </option>
       <method v="2" />
     </configuration>
-    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="67691">
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" value="67691" />
+      <option name="pid" />
       <option name="projectPathOnTarget" />
       <option name="selectedOptions">
         <list />
@@ -158,6 +158,8 @@
       <workItem from="1637588880794" duration="5097000" />
       <workItem from="1637674289036" duration="1388000" />
       <workItem from="1639073592678" duration="1990000" />
+      <workItem from="1639084094002" duration="1426000" />
+      <workItem from="1639094043571" duration="181000" />
     </task>
     <servers />
   </component>

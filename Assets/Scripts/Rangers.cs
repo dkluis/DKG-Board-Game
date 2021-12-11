@@ -25,7 +25,7 @@ public class Rangers
     }
 
     [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
-    public void Refill(GameObject activePlayer)
+    public void Refill(GameObject activePlayer, int originalX = 9999, int originalY = 9999)
     {
         _range = activePlayer.GetComponent<PlayerController>().range;
         _activePlayerPosition = activePlayer.transform.position;
@@ -33,8 +33,20 @@ public class Rangers
         _rangerPoints = new List<BoardLocation>();
         Debug.Log($"Refill RangePoints from location {_activePlayerPosition.x}, {_activePlayerPosition.y} with Range of {_range}");
 
-        var x0 = (int) _activePlayerPosition.x;
-        var y0 = (int) _activePlayerPosition.y;
+        int x0;
+        int y0;
+        if (originalX != 9999 && originalY != 9999)
+        {
+            x0 = originalX;
+            y0 = originalY;
+        }
+        else
+        {
+
+            x0 = (int) _activePlayerPosition.x;
+            y0 = (int) _activePlayerPosition.y;
+        }
+
         // Build the X-Axis going right with Y going up
         var xModPlus = 0;
         for (var yLoop1 = y0; yLoop1 <= _range + y0; yLoop1++)
