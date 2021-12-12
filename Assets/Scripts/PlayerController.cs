@@ -158,12 +158,17 @@ public class PlayerController : MonoBehaviour
         var cc = _colliders.CheckIfColliderPoint(locToCheck);
         var bp = _board.IsValidBoardPoint(locToCheck);
 
-        if (!gp || cc || !bp)
+        if (!gp || !bp)
         {
-            UpdateStatus($"Invalid Move!!");
+            if (cc)
+            {
+                UpdateStatus($"You Hit a BadGuy at {locToCheck}");
+                return;
+            }
+            UpdateStatus($"Invalid Move!! to {locToCheck}");
             return;
         }
-
+        
         _point.x = x;
         _point.y = y;
         UpdateStatus($"Moved to Coordinate ({_point.x},{_point.y})");
