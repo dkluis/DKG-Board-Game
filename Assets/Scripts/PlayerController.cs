@@ -12,9 +12,11 @@ public class PlayerController : MonoBehaviour
     private GameObject _token2;
     private GameObject _activeToken;
     private int _activeTokenInt;
+    private int _numOfTurns;
     private UnityEngine.UI.Text _token1Text;
     private UnityEngine.UI.Text _token2Text;
     private UnityEngine.UI.Text _statusText;
+    private string _status;
     private float _originalX;
     private float _originalY;
     private bool _tokenHasPlayed;
@@ -39,10 +41,7 @@ public class PlayerController : MonoBehaviour
         _statusText = GameObject.Find("Status").GetComponent<UnityEngine.UI.Text>();
         _activeToken = _token1;
         _activeTokenInt = 1;
-        _token1Text.text = "Green Active";
-        _token2Text.text = "Orange InActive";
-        _statusText.text = "Status: Turn 1 - Green Active (Use M for Menu, Use O to stop Turn)";
-        
+        _numOfTurns = 0;
         _colliders = new Colliders();
         _board = new BoardCoordinates();
         _rangeLocations = new Rangers(_board, _colliders);
@@ -73,9 +72,7 @@ public class PlayerController : MonoBehaviour
         // ToDo add code for finalizing turn
         _turnInProgress = false;
         _tokenHasPlayed = false;
-        _token1Text.text = "Green InActive";
-        _token2Text.text = "Orange InActive";
-        _statusText.text = "Status: Turn 1 - Ended (use N to start new turn)";
+        UpdateStatus("Turn Over");
     }
 
     [UsedImplicitly]
@@ -84,13 +81,30 @@ public class PlayerController : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
+    private void UpdateStatus(string status = "")
+    {
+        if (_activeTokenInt == 1)
+        {
+            _token1Text.text = "Active";
+            _token2Text.text = "InActive";
+        }
+        else
+        {
+            _token1Text.text = "InActive";
+            _token2Text.text = "Active";
+        }
+
+        _statusText.text = $"Turn: {_numOfTurns} || G: {_token1Text.text} || O: {_token2Text.text} || Status: {status}";
+    }
 
     private void OnNewTurn()
     {
         if (_turnInProgress) return;
         _turnInProgress = true;
+        _numOfTurns++;
+        UpdateStatus();
+
         var position = _activeToken.transform.position;
-        print($"Changing Original Pos from ({_originalX},{_originalY}) to ({position.x},{position.y})");
         _originalX = position.x;
         _originalY = position.y;
         if (_currentRange != range)
@@ -123,41 +137,49 @@ public class PlayerController : MonoBehaviour
     [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
     private void CheckMove(Vector3 mouseCalcPos)
     {
-
         _isMoving = false;
+        var curPos = _activeToken.transform.position;
         var roundX = (float) Math.Round(_originalX + mouseCalcPos.x, 0);
         var roundY = (float) Math.Round(_originalY + mouseCalcPos.y, 0);
-        _point.x = roundX - _originalX;
-        _point.y = roundY - _originalY;
-        var locToCheck = new Vector2(_point.x, _point.y);
+        var x = roundX - _originalX;
+        var y = roundY - _originalY;
+        var locToCheck = new Vector2(x, y);
 
         if (CheckIfOtherTokenIsClicked(locToCheck) && !_tokenHasPlayed)
         {
             _activeToken = _activeToken.name == _token1.name ? _token2 : _token1;
+            _activeTokenInt = _activeTokenInt == 1 ? 2 : 1;
             _rangeLocations.Refill(_activeToken);
             _tokenHasPlayed = true;
-            _token1Text.text = "Green InActive";
-            _token2Text.text = "Orange Active";
-            _statusText.text = "Status: Turn 1 - Orange Active";
+            UpdateStatus("Switched Token");
         }
 
         var gp = _rangeLocations.CheckRangerPoint(locToCheck);
         var cc = _colliders.CheckIfColliderPoint(locToCheck);
         var bp = _board.IsValidBoardPoint(locToCheck);
-        if (!gp || cc || !bp) return;
+
+        if (!gp || cc || !bp)
+        {
+            UpdateStatus($"Invalid Move!!");
+            return;
+        }
+
+        _point.x = x;
+        _point.y = y;
+        UpdateStatus($"Moved to Coordinate ({_point.x},{_point.y})");
         _isMoving = true;
     }
 
     private void Update()
     {
-        if (!_isMoving) return;
-        //_activeToken.transform.position = _point;
-        //_isMoving = false;
-        
+        if (_isMoving) _activeToken.transform.position = _point;
+        _isMoving = false;
+        /*
         var position = _activeToken.transform.position;
         position = Vector3.MoveTowards(position, _point, Time.deltaTime * speed);
         _activeToken.transform.position = position;
         if (Math.Abs(position.x - _point.x) < 0.00001 && Math.Abs(position.y - _point.y) < 0.00001) _isMoving = false;
+        */
     }
 
     private void StopMoving()
