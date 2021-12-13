@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+// ReSharper disable CompareOfFloatsByEqualityOperator
 
 [SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
 public class PlayerController : MonoBehaviour
@@ -12,11 +13,11 @@ public class PlayerController : MonoBehaviour
     private GameObject _token2;
     private GameObject _activeToken;
     private int _activeTokenInt;
-    private int _numOfTurns;
-    private UnityEngine.UI.Text _token1Text;
-    private UnityEngine.UI.Text _token2Text;
-    private UnityEngine.UI.Text _statusText;
-    private string _status;
+    //private int _numOfTurns;
+    //private UnityEngine.UI.Text _token1Text;
+    //private UnityEngine.UI.Text _token2Text;
+    //private UnityEngine.UI.Text _statusText;
+    //private string _status;
     private float _originalX;
     private float _originalY;
     private bool _tokenHasPlayed;
@@ -36,12 +37,12 @@ public class PlayerController : MonoBehaviour
     {
         _token1 = GameObject.Find("Bird Token Grey");
         _token2 = GameObject.Find("Bird Token Grey 1");
-        _token1Text = GameObject.Find("Token1").GetComponent<UnityEngine.UI.Text>();
-        _token2Text = GameObject.Find("Token2").GetComponent<UnityEngine.UI.Text>();
-        _statusText = GameObject.Find("Status").GetComponent<UnityEngine.UI.Text>();
+        //_token1Text = GameObject.Find("Token1").GetComponent<UnityEngine.UI.Text>();
+        //_token2Text = GameObject.Find("Token2").GetComponent<UnityEngine.UI.Text>();
+        //_statusText = GameObject.Find("Status").GetComponent<UnityEngine.UI.Text>();
         _activeToken = _token1;
         _activeTokenInt = 1;
-        _numOfTurns = 0;
+        //_numOfTurns = 0;
         _colliders = new Colliders();
         _board = new BoardCoordinates();
         _rangeLocations = new Rangers(_board, _colliders);
@@ -72,7 +73,7 @@ public class PlayerController : MonoBehaviour
         // ToDo add code for finalizing turn
         _turnInProgress = false;
         _tokenHasPlayed = false;
-        UpdateStatus("Turn Over");
+        //UpdateStatus("Turn Over");
     }
 
     [UsedImplicitly]
@@ -81,6 +82,7 @@ public class PlayerController : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
+    /*
     private void UpdateStatus(string status = "")
     {
         if (_activeTokenInt == 1)
@@ -96,13 +98,14 @@ public class PlayerController : MonoBehaviour
 
         _statusText.text = $"Turn: {_numOfTurns} || G: {_token1Text.text} || O: {_token2Text.text} || Status: {status}";
     }
+    */
 
     private void OnNewTurn()
     {
         if (_turnInProgress) return;
         _turnInProgress = true;
-        _numOfTurns++;
-        UpdateStatus();
+        //_numOfTurns++;
+        //UpdateStatus();
 
         var position = _activeToken.transform.position;
         _originalX = position.x;
@@ -138,7 +141,7 @@ public class PlayerController : MonoBehaviour
     private void CheckMove(Vector3 mouseCalcPos)
     {
         _isMoving = false;
-        var curPos = _activeToken.transform.position;
+        //var curPos = _activeToken.transform.position;
         var roundX = (float) Math.Round(_originalX + mouseCalcPos.x, 0);
         var roundY = (float) Math.Round(_originalY + mouseCalcPos.y, 0);
         var x = roundX - _originalX;
@@ -151,7 +154,7 @@ public class PlayerController : MonoBehaviour
             _activeTokenInt = _activeTokenInt == 1 ? 2 : 1;
             _rangeLocations.Refill(_activeToken);
             _tokenHasPlayed = true;
-            UpdateStatus("Switched Token");
+            //UpdateStatus("Switched Token");
         }
 
         var gp = _rangeLocations.CheckRangerPoint(locToCheck);
@@ -162,22 +165,42 @@ public class PlayerController : MonoBehaviour
         {
             if (cc)
             {
-                UpdateStatus($"You Hit a BadGuy at {locToCheck}");
+                //UpdateStatus($"You Hit a BadGuy at {locToCheck}");
+                ReduceLife();
                 return;
             }
-            UpdateStatus($"Invalid Move!! to {locToCheck}");
+            //UpdateStatus($"Invalid Move!! to {locToCheck}");
             return;
         }
         
         _point.x = x;
         _point.y = y;
-        UpdateStatus($"Moved to Coordinate ({_point.x},{_point.y})");
+        //UpdateStatus($"Moved to Coordinate ({_point.x},{_point.y})");
         _isMoving = true;
     }
 
+    private void ReduceLife()
+    {
+        if (_activeTokenInt != 1) return;
+        var g1 = GameObject.Find("Token1Life");
+        var localScale = g1.transform.localScale;
+        if (localScale.x == 1)
+        {
+            Debug.Log("You are Dead");
+            _activeToken.SetActive(false);
+        }
+        //Debug.Log(localScale.x);
+        localScale = new Vector3 (localScale.x - 1, localScale.y, localScale.z);
+        g1.transform.localScale = localScale;
+    }
+    
     private void Update()
     {
-        if (_isMoving) _activeToken.transform.position = _point;
+        if (_isMoving)
+        {
+            Debug.Log("Update");
+            _activeToken.transform.position = _point;
+        }
         _isMoving = false;
         /*
         var position = _activeToken.transform.position;
