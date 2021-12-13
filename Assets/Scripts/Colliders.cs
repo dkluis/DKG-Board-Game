@@ -19,7 +19,7 @@ public class Colliders
         var sceneInfo = GameObject.Find("SceneInfo");
         var maxes = sceneInfo.GetComponent<SceneInfo>();
         _colliderPoints = new List<BoardLocation>();
-        var allGameObjectLocations = GameObject.FindGameObjectsWithTag("CircleCollider");
+        var allGameObjectLocations = GameObject.FindGameObjectsWithTag("BadGuys");
         var random = new Random();
         foreach (var gO in allGameObjectLocations)
         {
@@ -33,13 +33,24 @@ public class Colliders
                         random.Next(maxes.boardMaxY * -1, maxes.boardMaxY));
                     gO.transform.position = newPos;
                     if (playerPos.x == newPos.x && playerPos.y == newPos.y) continue;
-                    if (!CheckIfColliderPoint(newPos)) good = true;
+                    if (!CheckIfColliderPoint(newPos) && !CheckIfTokenExists(newPos)) good = true;
                 }
             }
             
             using var boardLocation = new BoardLocation(gO.name, gO.tag, gO.transform.position);
             _colliderPoints.Add(boardLocation);
         }
+    }
+    
+    private bool CheckIfTokenExists(Vector2 locationCheck)
+    {
+        var gOList = GameObject.FindGameObjectsWithTag("Token");
+        foreach (var gO in gOList)
+        {
+            if ((Vector2) gO.transform.position == locationCheck) return true;
+        }
+
+        return false;
     }
 
     public bool CheckIfColliderPoint(Vector2 position)

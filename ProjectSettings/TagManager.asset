@@ -8,6 +8,7 @@ TagManager:
   - GridPoint
   - RangePoint
   - Token
+  - BadGuys
   layers:
   - Default
   - TransparentFX

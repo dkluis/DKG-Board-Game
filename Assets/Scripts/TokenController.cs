@@ -148,35 +148,29 @@ public class TokenController : MonoBehaviour
         var y = roundY - _originalY;
         var locToCheck = new Vector2(x, y);
 
-        if (CheckIfOtherTokenIsClicked(locToCheck) && !_tokenHasPlayed)
+        if (CheckIfOtherTokenIsClicked(locToCheck))
         {
+            if (_tokenHasPlayed) return;
             _activeToken = _activeToken.name == _token1.name ? _token2 : _token1;
             _activeTokenInt = _activeTokenInt == 1 ? 2 : 1;
             _rangeLocations.Refill(_activeToken);
             _tokenHasPlayed = true;
             //UpdateStatus("Switched Token");
-        }
-
-        var gp = _rangeLocations.CheckRangerPoint(locToCheck);
-        var cc = _colliders.CheckIfColliderPoint(locToCheck);
-        var bp = _board.IsValidBoardPoint(locToCheck);
-
-        if (!gp || !bp)
-        {
-            if (cc)
-            {
-                //UpdateStatus($"You Hit a BadGuy at {locToCheck}");
-                ReduceLife();
-            }
-            //UpdateStatus($"Invalid Move!! to {locToCheck}");
-            _isMoving = false;
             return;
         }
-
         
+        if (_colliders.CheckIfColliderPoint(locToCheck))
+        {
+            ReduceLife();
+            if (!_board.IsValidBoardPoint(locToCheck)) return;
+            if (!_rangeLocations.CheckRangerPoint(locToCheck)) return;
+            return;
+        }
+        if (!_board.IsValidBoardPoint(locToCheck)) return;
+        if (!_rangeLocations.CheckRangerPoint(locToCheck)) return;
+
         _point.x = x;
         _point.y = y;
-        //UpdateStatus($"Moved to Coordinate ({_point.x},{_point.y})");
         _isMoving = true;
     }
 
@@ -191,8 +185,8 @@ public class TokenController : MonoBehaviour
             Debug.Log($"Token {_activeTokenInt} is Dead");
             
             _activeToken.SetActive(false);
-            _activeToken = _activeToken.name == _token1.name ? _token2 : _token1;
             _activeTokenInt = _activeTokenInt == 1 ? 2 : 1;
+            _activeToken = _activeTokenInt == 1 ? _token2 : _token1;
             _rangeLocations.Refill(_activeToken);
             _tokenHasPlayed = true;
             
@@ -207,7 +201,6 @@ public class TokenController : MonoBehaviour
     {
         if (_isMoving)
         {
-            //Debug.Log("Update");
             _activeToken.transform.position = _point;
         }
         _isMoving = false;
