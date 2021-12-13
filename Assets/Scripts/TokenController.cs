@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 // ReSharper disable CompareOfFloatsByEqualityOperator
 
 [SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
-public class PlayerController : MonoBehaviour
+public class TokenController : MonoBehaviour
 {
     private GameObject _token1;
     private GameObject _token2;
@@ -35,8 +35,8 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        _token1 = GameObject.Find("Bird Token Grey");
-        _token2 = GameObject.Find("Bird Token Grey 1");
+        _token1 = GameObject.Find("Token1");
+        _token2 = GameObject.Find("Token2");
         //_token1Text = GameObject.Find("Token1").GetComponent<UnityEngine.UI.Text>();
         //_token2Text = GameObject.Find("Token2").GetComponent<UnityEngine.UI.Text>();
         //_statusText = GameObject.Find("Status").GetComponent<UnityEngine.UI.Text>();
@@ -167,11 +167,12 @@ public class PlayerController : MonoBehaviour
             {
                 //UpdateStatus($"You Hit a BadGuy at {locToCheck}");
                 ReduceLife();
-                return;
             }
             //UpdateStatus($"Invalid Move!! to {locToCheck}");
+            _isMoving = false;
             return;
         }
+
         
         _point.x = x;
         _point.y = y;
@@ -181,24 +182,32 @@ public class PlayerController : MonoBehaviour
 
     private void ReduceLife()
     {
-        if (_activeTokenInt != 1) return;
-        var g1 = GameObject.Find("Token1Life");
-        var localScale = g1.transform.localScale;
+        var g0 = gameObject;
+        g0 = GameObject.Find(_activeTokenInt == 1 ? "Token1Life" : "Token2Life");
+
+        var localScale = g0.transform.localScale;
         if (localScale.x == 1)
         {
-            Debug.Log("You are Dead");
+            Debug.Log($"Token {_activeTokenInt} is Dead");
+            
             _activeToken.SetActive(false);
+            _activeToken = _activeToken.name == _token1.name ? _token2 : _token1;
+            _activeTokenInt = _activeTokenInt == 1 ? 2 : 1;
+            _rangeLocations.Refill(_activeToken);
+            _tokenHasPlayed = true;
+            
+            return;
         }
-        //Debug.Log(localScale.x);
+
         localScale = new Vector3 (localScale.x - 1, localScale.y, localScale.z);
-        g1.transform.localScale = localScale;
+        g0.transform.localScale = localScale;
     }
     
     private void Update()
     {
         if (_isMoving)
         {
-            Debug.Log("Update");
+            //Debug.Log("Update");
             _activeToken.transform.position = _point;
         }
         _isMoving = false;
@@ -217,7 +226,7 @@ public class PlayerController : MonoBehaviour
 
     private bool CheckIfOtherTokenIsClicked(Vector2 clickedLocation)
     {
-        var gOList = GameObject.FindGameObjectsWithTag("Player");
+        var gOList = GameObject.FindGameObjectsWithTag("Token");
         foreach (var gO in gOList)
         {
             if ((Vector2) gO.transform.position != clickedLocation) continue;

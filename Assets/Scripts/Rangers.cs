@@ -8,7 +8,7 @@ public class Rangers
 {
     private List<BoardLocation> _rangerPoints = new List<BoardLocation>();
     private int _range;
-    private Vector2 _activePlayerPosition;
+    private Vector2 _activeTokenPosition;
     private readonly BoardCoordinates _boardPoints;
     private readonly Colliders _colliders;
 
@@ -25,13 +25,13 @@ public class Rangers
     }
 
     [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
-    public void Refill(GameObject activePlayer, int originalX = 9999, int originalY = 9999)
+    public void Refill(GameObject activeToken, int originalX = 9999, int originalY = 9999)
     {
-        _range = activePlayer.GetComponent<PlayerController>().range;
-        _activePlayerPosition = activePlayer.transform.position;
+        _range = activeToken.GetComponent<TokenController>().range;
+        _activeTokenPosition = activeToken.transform.position;
         ResetAllRangeIndicators();
         _rangerPoints = new List<BoardLocation>();
-        Debug.Log($"Refill RangePoints from location {_activePlayerPosition.x}, {_activePlayerPosition.y} with Range of {_range}");
+        Debug.Log($"Refill RangePoints from location {_activeTokenPosition.x}, {_activeTokenPosition.y} with Range of {_range}");
 
         int x0;
         int y0;
@@ -43,8 +43,8 @@ public class Rangers
         else
         {
 
-            x0 = (int) _activePlayerPosition.x;
-            y0 = (int) _activePlayerPosition.y;
+            x0 = (int) _activeTokenPosition.x;
+            y0 = (int) _activeTokenPosition.y;
         }
 
         // Build the X-Axis going right with Y going up
@@ -57,7 +57,7 @@ public class Rangers
             for (var xLoop1 = x0; xLoop1 <= _range + x0 - xModPlus; xLoop1++)
             {
                 if (CheckRangerPoint(new Vector2(xLoop1, yLoop1))) continue;
-                if (_activePlayerPosition.x == xLoop1) continue;
+                if (_activeTokenPosition.x == xLoop1) continue;
                 if (!CheckRangerPoint(new Vector2(xLoop1 - 1, yLoop1))) continue; 
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop1, yLoop1))) continue;
                 BuildRangePoint(new Vector2(xLoop1, yLoop1), 0);
@@ -74,7 +74,7 @@ public class Rangers
             for (var xLoop2 = x0; xLoop2 <= _range + x0 - xModPlus; xLoop2++)
             {
                 if (CheckRangerPoint(new Vector2(xLoop2, yLoop2))) continue;
-                if (_activePlayerPosition.x == xLoop2) continue;
+                if (_activeTokenPosition.x == xLoop2) continue;
                 if (!CheckRangerPoint(new Vector2(xLoop2 - 1, yLoop2))) continue;
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop2, yLoop2))) continue;
                 BuildRangePoint( new Vector2(xLoop2, yLoop2), 1);
@@ -92,7 +92,7 @@ public class Rangers
             for (var xLoop3 = x0; xLoop3 >= (_range * -1) + x0 - xModMinus; xLoop3--)
             {
                 if (CheckRangerPoint(new Vector2(xLoop3, yLoop3))) continue;
-                if (_activePlayerPosition.x == xLoop3) continue;
+                if (_activeTokenPosition.x == xLoop3) continue;
                 if (!CheckRangerPoint(new Vector2(xLoop3 + 1, yLoop3))) continue; 
                 if (_colliders.CheckIfColliderPoint(new Vector2(xLoop3, yLoop3))) continue;
                 BuildRangePoint( new Vector2(xLoop3, yLoop3), 2);

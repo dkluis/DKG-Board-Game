@@ -7,6 +7,7 @@ TagManager:
   - CircleCollider
   - GridPoint
   - RangePoint
+  - Token
   layers:
   - Default
   - TransparentFX
