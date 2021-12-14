@@ -6,7 +6,7 @@ public class MainMenuController : MonoBehaviour
 {
     [UsedImplicitly]
     public void PlayGame() {
-        SceneManager.LoadScene("InputSystemTest");
+        SceneManager.LoadScene("Scene1");
     }
  
     [UsedImplicitly]

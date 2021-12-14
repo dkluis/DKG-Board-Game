@@ -12,7 +12,6 @@ public class TokenController : MonoBehaviour
     private GameObject _token1;
     private GameObject _token2;
     private GameObject _activeToken;
-    private int _activeTokenInt;
     //private int _numOfTurns;
     //private UnityEngine.UI.Text _token1Text;
     //private UnityEngine.UI.Text _token2Text;
@@ -29,7 +28,7 @@ public class TokenController : MonoBehaviour
     public int range;
     private int _currentRange;
 
-    private Colliders _colliders;
+    private BadGuys _badGuys;
     private BoardCoordinates _board;
     private Rangers _rangeLocations;
 
@@ -41,11 +40,9 @@ public class TokenController : MonoBehaviour
         //_token2Text = GameObject.Find("Token2").GetComponent<UnityEngine.UI.Text>();
         //_statusText = GameObject.Find("Status").GetComponent<UnityEngine.UI.Text>();
         _activeToken = _token1;
-        _activeTokenInt = 1;
-        //_numOfTurns = 0;
-        _colliders = new Colliders();
+        _badGuys = new BadGuys();
         _board = new BoardCoordinates();
-        _rangeLocations = new Rangers(_board, _colliders);
+        _rangeLocations = new Rangers(_board, _badGuys);
         _turnInProgress = false;
         _currentRange = 2;
         _isMoving = false;
@@ -56,7 +53,7 @@ public class TokenController : MonoBehaviour
     [UsedImplicitly]
     private void OnRange()
     {
-        //_colliders.Shuffle(_activeToken.transform.position);
+        //_badGuys.Shuffle(_activeToken.transform.position);
         //_rangeLocations.Refill(_activeToken);
     }
 
@@ -73,7 +70,6 @@ public class TokenController : MonoBehaviour
         // ToDo add code for finalizing turn
         _turnInProgress = false;
         _tokenHasPlayed = false;
-        //UpdateStatus("Turn Over");
     }
 
     [UsedImplicitly]
@@ -82,30 +78,10 @@ public class TokenController : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
-    /*
-    private void UpdateStatus(string status = "")
-    {
-        if (_activeTokenInt == 1)
-        {
-            _token1Text.text = "Active";
-            _token2Text.text = "InActive";
-        }
-        else
-        {
-            _token1Text.text = "InActive";
-            _token2Text.text = "Active";
-        }
-
-        _statusText.text = $"Turn: {_numOfTurns} || G: {_token1Text.text} || O: {_token2Text.text} || Status: {status}";
-    }
-    */
-
     private void OnNewTurn()
     {
         if (_turnInProgress) return;
         _turnInProgress = true;
-        //_numOfTurns++;
-        //UpdateStatus();
 
         var position = _activeToken.transform.position;
         _originalX = position.x;
@@ -117,9 +93,8 @@ public class TokenController : MonoBehaviour
         }
 
         _tokenHasPlayed = false;
-        _colliders.Shuffle(_activeToken.transform.position);
+        _badGuys.Shuffle(_activeToken.transform.position);
         _rangeLocations.Refill(_activeToken);
-        //_colliders.ReFill(_activeToken.transform.position);
     }
 
     [UsedImplicitly]
@@ -152,14 +127,13 @@ public class TokenController : MonoBehaviour
         {
             if (_tokenHasPlayed) return;
             _activeToken = _activeToken.name == _token1.name ? _token2 : _token1;
-            _activeTokenInt = _activeTokenInt == 1 ? 2 : 1;
             _rangeLocations.Refill(_activeToken);
             _tokenHasPlayed = true;
             //UpdateStatus("Switched Token");
             return;
         }
         
-        if (_colliders.CheckIfColliderPoint(locToCheck))
+        if (_badGuys.CheckIfColliderPoint(locToCheck))
         {
             ReduceLife();
             if (!_board.IsValidBoardPoint(locToCheck)) return;
@@ -176,17 +150,15 @@ public class TokenController : MonoBehaviour
 
     private void ReduceLife()
     {
-        var g0 = gameObject;
-        g0 = GameObject.Find(_activeTokenInt == 1 ? "Token1Life" : "Token2Life");
-
+        var g0 = GameObject.Find(_activeToken.name == "Token1" ? "Token1Life" : "Token2Life");
         var localScale = g0.transform.localScale;
         if (localScale.x == 1)
         {
-            Debug.Log($"Token {_activeTokenInt} is Dead");
-            
+            Debug.Log($"{_activeToken.name} is Dead");
             _activeToken.SetActive(false);
-            _activeTokenInt = _activeTokenInt == 1 ? 2 : 1;
-            _activeToken = _activeTokenInt == 1 ? _token2 : _token1;
+            if (_token1.activeSelf == false && _token2.activeSelf == false) OnMenu();
+            
+            _activeToken = _activeToken.name == "Token1" ? _token2 : _token1;
             _rangeLocations.Refill(_activeToken);
             _tokenHasPlayed = true;
             

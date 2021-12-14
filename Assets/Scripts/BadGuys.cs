@@ -3,11 +3,11 @@ using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using Random = System.Random;
 
-public class Colliders
+public class BadGuys
 {
     private List<BoardLocation> _colliderPoints = new List<BoardLocation>();
 
-    public Colliders()
+    public BadGuys()
     {
         var pos = new Vector2(0f, 0f);
         ReFill(pos);

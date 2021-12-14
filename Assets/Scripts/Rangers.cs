@@ -10,12 +10,12 @@ public class Rangers
     private int _range;
     private Vector2 _activeTokenPosition;
     private readonly BoardCoordinates _boardPoints;
-    private readonly Colliders _colliders;
+    private readonly BadGuys _badGuys;
 
-    public Rangers(BoardCoordinates boardPoints, Colliders colliders)
+    public Rangers(BoardCoordinates boardPoints, BadGuys badGuys)
     {
         _boardPoints = boardPoints;
-        _colliders = colliders;
+        _badGuys = badGuys;
     }
 
     public bool CheckRangerPoint(Vector2 position)
@@ -51,7 +51,7 @@ public class Rangers
         var xModPlus = 0;
         for (var yLoop1 = y0; yLoop1 <= _range + y0; yLoop1++)
         {
-            if (_colliders.CheckIfColliderPoint(new Vector2(x0, yLoop1))) continue;
+            if (_badGuys.CheckIfColliderPoint(new Vector2(x0, yLoop1))) continue;
             if (!CheckRangerPoint(new Vector2(x0, yLoop1 - 1)) && yLoop1 != y0) continue;
             BuildRangePoint(new Vector2(x0, yLoop1), 0);
             for (var xLoop1 = x0; xLoop1 <= _range + x0 - xModPlus; xLoop1++)
@@ -59,7 +59,7 @@ public class Rangers
                 if (CheckRangerPoint(new Vector2(xLoop1, yLoop1))) continue;
                 if (_activeTokenPosition.x == xLoop1) continue;
                 if (!CheckRangerPoint(new Vector2(xLoop1 - 1, yLoop1))) continue; 
-                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop1, yLoop1))) continue;
+                if (_badGuys.CheckIfColliderPoint(new Vector2(xLoop1, yLoop1))) continue;
                 BuildRangePoint(new Vector2(xLoop1, yLoop1), 0);
             }
             xModPlus++;
@@ -68,7 +68,7 @@ public class Rangers
         xModPlus = 1;
         for (var yLoop2 = y0 - 1; yLoop2 >= (_range * -1) + y0; yLoop2--)
         {
-            if (_colliders.CheckIfColliderPoint(new Vector2(x0, yLoop2))) continue;
+            if (_badGuys.CheckIfColliderPoint(new Vector2(x0, yLoop2))) continue;
             if (!CheckRangerPoint(new Vector2(x0, yLoop2 + 1))) continue; 
             BuildRangePoint(new Vector2(x0, yLoop2), 1);
             for (var xLoop2 = x0; xLoop2 <= _range + x0 - xModPlus; xLoop2++)
@@ -76,7 +76,7 @@ public class Rangers
                 if (CheckRangerPoint(new Vector2(xLoop2, yLoop2))) continue;
                 if (_activeTokenPosition.x == xLoop2) continue;
                 if (!CheckRangerPoint(new Vector2(xLoop2 - 1, yLoop2))) continue;
-                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop2, yLoop2))) continue;
+                if (_badGuys.CheckIfColliderPoint(new Vector2(xLoop2, yLoop2))) continue;
                 BuildRangePoint( new Vector2(xLoop2, yLoop2), 1);
             }
             xModPlus++;
@@ -86,7 +86,7 @@ public class Rangers
         var xModMinus = 0;
         for (var yLoop3 = y0; yLoop3 <= _range + y0; yLoop3++)
         {
-            if (_colliders.CheckIfColliderPoint(new Vector2(x0, yLoop3))) continue;
+            if (_badGuys.CheckIfColliderPoint(new Vector2(x0, yLoop3))) continue;
             if (!CheckRangerPoint(new Vector2(x0, yLoop3 - 1)) && yLoop3 != y0) continue;
             if (!CheckRangerPoint(new Vector2(x0, yLoop3))) BuildRangePoint(new Vector2(x0, yLoop3), 2);
             for (var xLoop3 = x0; xLoop3 >= (_range * -1) + x0 - xModMinus; xLoop3--)
@@ -94,7 +94,7 @@ public class Rangers
                 if (CheckRangerPoint(new Vector2(xLoop3, yLoop3))) continue;
                 if (_activeTokenPosition.x == xLoop3) continue;
                 if (!CheckRangerPoint(new Vector2(xLoop3 + 1, yLoop3))) continue; 
-                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop3, yLoop3))) continue;
+                if (_badGuys.CheckIfColliderPoint(new Vector2(xLoop3, yLoop3))) continue;
                 BuildRangePoint( new Vector2(xLoop3, yLoop3), 2);
             }
             xModMinus--;
@@ -105,13 +105,13 @@ public class Rangers
         for (var yLoop4 = y0; yLoop4 >= (_range * -1) + y0; yLoop4--)
         {
             if (y0 == yLoop4) continue;
-            if (_colliders.CheckIfColliderPoint(new Vector2(x0, yLoop4))) continue;
+            if (_badGuys.CheckIfColliderPoint(new Vector2(x0, yLoop4))) continue;
             if (!CheckRangerPoint(new Vector2(x0, yLoop4 + 1))) continue;
             for (var xLoop4 = x0; xLoop4 >= (_range * -1) + x0 - xModMinus; xLoop4--)
             {
                 if (CheckRangerPoint(new Vector2(xLoop4, yLoop4))) continue;
                 if (!CheckRangerPoint(new Vector2(xLoop4 + 1, yLoop4))) continue;
-                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop4, yLoop4))) continue;
+                if (_badGuys.CheckIfColliderPoint(new Vector2(xLoop4, yLoop4))) continue;
                 BuildRangePoint(new Vector2(xLoop4, yLoop4), 3);
             }
             xModMinus--;
@@ -125,7 +125,7 @@ public class Rangers
             for (var yLoop5 = y0; yLoop5 <= _range + y0 - yModPlus; yLoop5++)
             {
                 if (CheckRangerPoint(new Vector2(xLoop5, yLoop5))) continue;
-                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop5, yLoop5))) break;
+                if (_badGuys.CheckIfColliderPoint(new Vector2(xLoop5, yLoop5))) break;
                 BuildRangePoint(new Vector2(xLoop5, yLoop5), 4);
             }
             yModPlus++;
@@ -139,7 +139,7 @@ public class Rangers
             for (var yLoop6 = y0; yLoop6 <= _range + y0 - yModPlus; yLoop6++)
             {
                 if (CheckRangerPoint(new Vector2(xLoop6, yLoop6))) continue;
-                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop6, yLoop6))) break;
+                if (_badGuys.CheckIfColliderPoint(new Vector2(xLoop6, yLoop6))) break;
                 BuildRangePoint(new Vector2(xLoop6, yLoop6), 5);
             }
             yModPlus++;
@@ -153,7 +153,7 @@ public class Rangers
             for (var yLoop7 = y0; yLoop7 >= (_range * -1) + y0 - yModMinus; yLoop7--)
             {
                 if (CheckRangerPoint(new Vector2(xLoop7, yLoop7))) continue;
-                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop7, yLoop7))) break;
+                if (_badGuys.CheckIfColliderPoint(new Vector2(xLoop7, yLoop7))) break;
                 BuildRangePoint(new Vector2(xLoop7, yLoop7), 6);
             }
             yModMinus--;
@@ -167,7 +167,7 @@ public class Rangers
             for (var yLoop6 = y0; yLoop6 >= (_range * -1) + y0 - yModMinus; yLoop6--)
             {
                 if (CheckRangerPoint(new Vector2(xLoop6, yLoop6))) continue;
-                if (_colliders.CheckIfColliderPoint(new Vector2(xLoop6, yLoop6))) break;
+                if (_badGuys.CheckIfColliderPoint(new Vector2(xLoop6, yLoop6))) break;
                 BuildRangePoint(new Vector2(xLoop6, yLoop6), 7);
             }
             yModMinus--;
